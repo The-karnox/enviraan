@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
     Avatar,
     AvatarBadge,
@@ -15,6 +14,10 @@ import {
   import { Text } from "@/components/ui/text";
   import { Heading } from "@/components/ui/heading";
   import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
+  import { Button } from "@/components/ui/button"
+  import { TouchableOpacity } from "react-native";
+  import { useRouter } from 'expo-router';
+
 
 
 
@@ -25,7 +28,7 @@ import {
     return date.toLocaleDateString('en-US', options);
 };
   const App = () => {
-
+    const router = useRouter();
     return(
         <View style={styles.container}>
             <ImageBackground source={vector} style={styles.image} />
@@ -47,7 +50,9 @@ import {
     
       </Badge>
       </Center>
+      <Center>
       <Text style={{color :"#313840"}} style={styles.spacing2} size="lg">Your last calculated carbon footprint</Text>
+      </Center>
       <Center>
       <Heading size="5xl" style={{color :"#2d4901"}}>7.50</Heading>
       </Center>
@@ -58,12 +63,25 @@ import {
       <Text style={{color :"#79879d"}} size="sm">Last Calculated On: {getCurrentDate()} </Text>
       </Center>
       <Center className="w-[300px] h-[150px]">
-      <Progress value={75} size="lg" orientation="horizontal">
+      <Progress value={75} size="lg" orientation="horizontal" style={styles.spacing3}>
         <ProgressFilledTrack style={styles.progressFilledTrack}/>
       </Progress>
+      <Button
+      style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('./app/Question0')}>   
+          <Center>
+      <Text size='2xl' style={{color :"#000000"}}>
+           Continue
+      </Text>
+      </Center>
+     
+      </TouchableOpacity>
+    </Button>
     </Center>
+   
     </VStack>
     </Center>
+
         </View>
         );
     }
@@ -106,8 +124,17 @@ import {
       spacing2: {
         marginBottom: 14,
       },
+      spacing3: {
+        marginBottom: 48,
+      },
       progressFilledTrack: {
         backgroundColor: "#62ffcb", 
+      },
+      button: {
+        backgroundColor: "#9dfc03",
+        width: "100%",
+        borderRadius: 20,
+        textAlign: "center",
       },
    } );
   
