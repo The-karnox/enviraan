@@ -68,7 +68,7 @@ import {
       </Progress>
       <Button
       style={styles.button}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push('./app/Question0')}>   
+        <TouchableOpacity style={styles.button} onPress={() => router.push('./Question0')}>   
           <Center>
       <Text size='2xl' style={{color :"#000000"}}>
            Continue
