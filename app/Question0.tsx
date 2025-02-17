@@ -6,8 +6,10 @@ import { Text } from '@/components/ui/text';
 import calculator from "../assets/images/calculator.png";
  import { Button } from "@/components/ui/button";
  import { TouchableOpacity } from "react-native";
- import { Router } from 'expo-router';
  import { Center } from "@/components/ui/center";
+ import { useRouter } from 'expo-router';
+ import LottieView from 'lottie-react-native';
+ import tw from 'twrnc';
 
 
 const Question0 = () => {
@@ -24,7 +26,11 @@ insights and start making a difference!</Text>
 
     </Box>
     <View style={styles.container}>
-    <Image source={calculator} style={styles.image} />
+    <LottieView
+      source={require('../assets/animations/calculator.json')}
+      autoPlay
+      loop
+      style={styles.image}/>
     <Button
       style={styles.button}>
         <TouchableOpacity onPress={() => router.push('./Question1')}>   
@@ -65,9 +71,10 @@ const styles = StyleSheet.create({
          padding: 20,
     },
     image: {
-        marginTop: 0, // Adjust this value to move the image lower
-        width: 350, // Adjust the width as needed
-        height: 350, // Adjust the height as needed
+        marginTop: 0, 
+        width: 350,
+        height: 350, 
+        marginBottom: 80,
     },
      button: {
         backgroundColor: "#9dfc03",
