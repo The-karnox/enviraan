@@ -3,7 +3,6 @@ import {  View,StyleSheet,Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
-import calculator from "../assets/images/calculator.png";
  import { Button } from "@/components/ui/button";
  import { TouchableOpacity } from "react-native";
  import { Center } from "@/components/ui/center";
@@ -13,6 +12,7 @@ import calculator from "../assets/images/calculator.png";
 
 
 const Question0 = () => {
+    const router = useRouter();
     return (
         <><LinearGradient
             colors={['#ffffff', '#f1ffdc']}
