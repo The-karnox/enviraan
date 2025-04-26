@@ -33,7 +33,7 @@ insights and start making a difference!</Text>
       style={styles.image}/>
     <Button
       style={styles.button}>
-        <TouchableOpacity onPress={() => router.push('./Question1')}>   
+        <TouchableOpacity onPress={() => router.push('./entry')}>   
         <Center>
       <Text size='2xl' style={{color :"#000000"}}>
            Start Calculation
