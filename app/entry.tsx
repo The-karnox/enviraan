@@ -12,7 +12,7 @@ const GradientBackground = () => {
             colors={['#f6ffec', '#e3ffb7']}
             style={styles.background}
         >
-            <View style={styles.container}>
+            <View style={styles.container}> 
             <Image source={require('../assets/images/EnviGuide_primar.png')} style={styles.icon} />
                 <Text size="4xl" bold={true} style={styles.title}>
                     Collaborate with us in creating green choices simple and significant.
@@ -52,9 +52,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     icon: {
-        width: 300, // Adjust the width of the icon
-        height: 200, // Adjust the height of the icon
-        marginBottom: 200, // Add spacing below the icon
+        width: 300, 
+        height: 200, 
+        marginBottom: 200, 
     },
     title: {
         color: '#2d4901',
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         alignItems: 'center',
         marginBottom: 20,
-        backgroundColor: '#9dfc03', // Different color for the Sign Up button
+        backgroundColor: '#9dfc03', 
     },
     buttonText: {
         color: '#000',
