@@ -1,96 +1,92 @@
 import React from 'react';
-import { View, StyleSheet,Image, TouchableOpacity } from 'react-native';
+import {  View,StyleSheet,Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
-import { useRouter } from 'expo-router';
+ import { Button } from "@/components/ui/button";
+ import { TouchableOpacity } from "react-native";
+ import { Center } from "@/components/ui/center";
+ import { useRouter } from 'expo-router';
+ import LottieView from 'lottie-react-native';
+ import tw from 'twrnc';
 
-const GradientBackground = () => {
+
+const Question0 = () => {
     const router = useRouter();
-
     return (
-        <LinearGradient
-            colors={['#f6ffec', '#e3ffb7']}
+        <><LinearGradient
+            colors={['#ffffff', '#f1ffdc']}
             style={styles.background}
-        >
-            <View style={styles.container}> 
-            <Image source={require('../assets/images/EnviGuide_primar.png')} style={styles.icon} />
-                <Text size="4xl" bold={true} style={styles.title}>
-                    Collaborate with us in creating green choices simple and significant.
-                </Text>
-                <TouchableOpacity
-                    style={styles.loginbutton}
-                    onPress={() => router.push('./login')}
-                >
-                    <Text size="lg" style={styles.buttonTextlogin}>
-                        Log In
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[ styles.signupButton]}
-                    onPress={() => router.push('./signup')}
-                >
-                    <Text size="lg" style={styles.buttonText}>
-                        Sign Up
-                    </Text>
-                </TouchableOpacity>
-                <Text style={styles.footerText}>
-                   Your data is safe with us. We respect your privacy. 
-                </Text>
-            </View>
+        ><Box style={styles.box}>
+        <Text size='4xl' bold = {true}  style={styles.text}>Let's Calculate Your Carbon Footprint</Text>
+        <Text size='lg' style={styles.text2}>Answer a few simple questions about your lifestyle
+and activities to see your impact on the
+environment. It only takes a few minutes to get
+insights and start making a difference!</Text>
+
+    </Box>
+    <View style={styles.container}>
+    <LottieView
+      source={require('../assets/animations/calculator.json')}
+      autoPlay
+      loop
+      style={styles.image}/>
+    <Button
+      style={styles.button}>
+        <TouchableOpacity onPress={() => router.push('./modules')}>   
+        <Center>
+      <Text size='2xl' style={{color :"#000000"}}>
+           Start Calculation
+      </Text>
+      </Center>
+     
+      </TouchableOpacity>
+    </Button>
+    </View>
         </LinearGradient>
+        </>
     );
-};
+}
 
 const styles = StyleSheet.create({
     background: {
         flex: 1,
     },
     container: {
-        flex: 1,
+        flex: 0,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 20,
     },
-    icon: {
-        width: 300, 
-        height: 200, 
-        marginBottom: 200, 
-    },
-    title: {
-        color: '#2d4901',
-        textAlign: 'center',
-        marginBottom: 40,
-    },
-    loginbutton: {
-        backgroundColor: 'transparent',
-        borderWidth: 2,
-        width: '100%',
-        paddingVertical: 10,
-        borderRadius: 25,
-        alignItems: 'center',
-        marginBottom: 20,
-        borderColor: '#578c01'
-    },
-    signupButton: {
-        width: '100%',
-        paddingVertical: 10,
-        borderRadius: 25,
-        alignItems: 'center',
-        marginBottom: 20,
-        backgroundColor: '#9dfc03', 
-    },
-    buttonText: {
+    text: {
+        
         color: '#000',
-        fontWeight: 'normal',
+        paddingTop: 40,
     },
-    buttonTextlogin: {
-        color: '#578c01',
-        fontWeight: 'normal',
+    text2: {
+           color: '#000',
+        paddingTop: 20,
     },
-    footerText: {
-        color: '#2d4901',
-        fontWeight: 'normal',
+    box:{
+        backgroundColor: 'transparent',
+         padding: 20,
     },
+    image: {
+        marginTop: 0, 
+        width: 350,
+        height: 350, 
+        marginBottom: 80,
+    },
+     button: {
+        backgroundColor: "#9dfc03",
+        width: "90%",
+       marginTop: 20,
+        borderRadius: 20,
+        textAlign: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
+        
+      },
+    
 });
 
-export default GradientBackground;
+export default Question0;

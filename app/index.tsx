@@ -1,141 +1,159 @@
-import {
-    Avatar,
-    AvatarBadge,
-    AvatarFallbackText,
-    AvatarImage,
-  } from '@/components/ui/avatar';
-  import { Badge, BadgeIcon, BadgeText  } from "@/components/ui/badge";
-  import { Center } from "@/components/ui/center";
-  import { AlertCircleIcon } from "@/components/ui/icon";
-  import { VStack } from "@/components/ui/vstack";
-  import { View, StyleSheet, ImageBackground,Dimensions } from "react-native";
-  import vector from "../assets/images/vector.png";
-  import Group from "../assets/images/Group.png";
-  import { Text } from "@/components/ui/text";
-  import { Heading } from "@/components/ui/heading";
-  import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
-  import { Button } from "@/components/ui/button"
-  import { TouchableOpacity } from "react-native";
-  import { useRouter } from 'expo-router';
+import React from 'react';
+import { View, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Text } from '@/components/ui/text';
+import { useRouter } from 'expo-router';
 
-
-
-
-  const { width, height } = Dimensions.get('window');
-  const getCurrentDate = () => {
-    const date = new Date();
-    const options = { year: 'numeric', month: 'short', day: '2-digit' };
-    return date.toLocaleDateString('en-US', options);
-};
-  const App = () => {
+const GradientBackground = () => {
     const router = useRouter();
-    return(
-        <View style={styles.container}>
-            <ImageBackground source={vector} style={styles.image} />
-            <ImageBackground source={Group} style={styles.groupImage} />
 
-        <Avatar  size="lg" style={styles.avatar}>
-          <AvatarFallbackText />
-          <AvatarImage source={{
-          uri:"https://api.dicebear.com/9.x/avataaars-neutral/svg"}} />
-            
-          <AvatarBadge />
-        </Avatar>
-        <Center>
-        <VStack style={styles.Vstack}>
-          <Center>
-         <Badge size="lg" variant="solid" action="warning" style={styles.spacing}>
-        <BadgeIcon as={AlertCircleIcon} className="ml-2" />
-        <BadgeText> Moderate</BadgeText>
-    
-      </Badge>
-      </Center>
-      <Center>
-      <Text style={{color :"#313840"}} style={styles.spacing2} size="lg">Your last calculated carbon footprint</Text>
-      </Center>
-      <Center>
-      <Heading size="5xl" style={{color :"#2d4901"}}>7.50</Heading>
-      </Center>
-      <Center>
-      <Text style={{color :"#6f7d95"}} size="md" style={styles.spacing2}>Tons of CO2</Text>
-      </Center>
-      <Center>
-      <Text style={{color :"#79879d"}} size="sm">Last Calculated On: {getCurrentDate()} </Text>
-      </Center>
-      <Center className="w-[300px] h-[150px]">
-      <Progress value={75} size="lg" orientation="horizontal" style={styles.spacing3}>
-        <ProgressFilledTrack style={styles.progressFilledTrack}/>
-      </Progress>
-      <Button
-      style={styles.button}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push('./Question0')}>   
-          <Center>
-      <Text size='2xl' style={{color :"#000000"}}>
-           Continue
-      </Text>
-      </Center>
-     
-      </TouchableOpacity>
-    </Button>
-    </Center>
-   
-    </VStack>
-    </Center>
+    const renderContent = () => {
+        if (Platform.OS === 'web') {
+            // Web-specific design
+            return (
+                <View style={styles.webContainer}>
+                    <Text size="4xl" bold={true} style={styles.webTitle}>
+                        Let's Calculate Your Carbon Footprint
+                    </Text>
+                    <Text size="lg" style={styles.webSubtitle} numberOfLines={3}>
+                       Answer a few simple questions about your lifestyle and activities to see your impact on the environment. It only takes a few minutes to get insights and start making a difference!
+                    </Text>
+                    <TouchableOpacity
+                        style={styles.webButton}
+                        onPress={() => (window.location.href = '/modules')}
+                    >
+                        <Text size="lg" style={styles.webButtonText}>
+                            Strat Calculation  
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            );
+        } else {
+            // Mobile-specific design
+            return (
+                <LinearGradient
+                    colors={['#f6ffec', '#e3ffb7']}
+                    style={styles.background}
+                >
+                    <View style={styles.container}>
+                        <Image
+                            source={require('../assets/images/EnviGuide_primar.png')}
+                            style={styles.icon}
+                        />
+                        <Text size="4xl" bold={true} style={styles.title}>
+                            Collaborate with us in creating green choices simple and significant.
+                        </Text>
+                        <TouchableOpacity
+                            style={styles.loginbutton}
+                            onPress={() => router.push('./login')}
+                        >
+                            <Text size="lg" style={styles.buttonTextlogin}>
+                                Log In
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.signupButton}
+                            onPress={() => router.push('./entry')}
+                        >
+                            <Text size="lg" style={styles.buttonText}>
+                                Sign Up
+                            </Text>
+                        </TouchableOpacity>
+                        <Text style={styles.footerText}>
+                            Your data is safe with us. We respect your privacy.
+                        </Text>
+                    </View>
+                </LinearGradient>
+            );
+        }
+    };
 
-        </View>
-        );
-    }
-      const styles = StyleSheet.create({
-        container: {
-            flex: 1,
-            backgroundColor: '#FDFFFB',
-        },
-        image: {
-           position: 'absolute',
-           left: 0,
-           top: height*0.27,
-           width: '100%',
-           height: '100%', 
-        },
-        groupImage: {
-          position: 'absolute',
-          left: -1,
-          top: 80,
-          width: 380,  
-          height: 210,
-        },
-        avatar: {
-          position: 'relative',
-          top: 45, 
-          left: 310, 
-      },
-      // badge:{
-      //   position: 'absolute',
-      //   top: '50%',
-      //   left: '50%',
-        // transform: [{ translateX: -50 }, { translateY: -50 }],
-      
-      Vstack:{
-        marginTop:230,
-      },
-      spacing: {
-        marginBottom: 6,
-      },
-      spacing2: {
-        marginBottom: 14,
-      },
-      spacing3: {
-        marginBottom: 48,
-      },
-      progressFilledTrack: {
-        backgroundColor: "#62ffcb", 
-      },
-      button: {
-        backgroundColor: "#9dfc03",
-        width: "100%",
-        borderRadius: 20,
-        textAlign: "center",
-      },
-   } );
-  
-export default App;
+    // Return the rendered content
+    return renderContent();
+};
+
+const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+    },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    icon: {
+        width: 300,
+        height: 200,
+        marginBottom: 200,
+    },
+    title: {
+        color: '#2d4901',
+        textAlign: 'center',
+        marginBottom: 40,
+    },
+    loginbutton: {
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        width: '100%',
+        paddingVertical: 10,
+        borderRadius: 25,
+        alignItems: 'center',
+        marginBottom: 20,
+        borderColor: '#578c01',
+    },
+    signupButton: {
+        width: '100%',
+        paddingVertical: 10,
+        borderRadius: 25,
+        alignItems: 'center',
+        marginBottom: 20,
+        backgroundColor: '#9dfc03',
+    },
+    buttonText: {
+        color: '#000',
+        fontWeight: 'normal',
+    },
+    buttonTextlogin: {
+        color: '#578c01',
+        fontWeight: 'normal',
+    },
+    footerText: {
+        color: '#2d4901',
+        fontWeight: 'normal',
+    },
+    webContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 40,
+        backgroundColor: '#f6ffec',
+    },
+    webTitle: {
+        color: '#2d4901',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    webSubtitle: {
+        color: '#000',
+        maxWidth:800,
+        textAlign: 'justify', // Align text like a paragraph
+        marginBottom: 30,
+        paddingHorizontal: 40,
+        paddingVertical: 10, // Reduce padding for better readability
+        lineHeight: 1, // Add line height for better spacing between lines
+    },
+    webButton: {
+        backgroundColor: '#9dfc03',
+        paddingVertical: 15,
+        paddingHorizontal: 200,
+        borderRadius: 35,
+        alignItems: 'center',
+    },
+    webButtonText: {
+        color: '#000',
+        fontWeight: 'normal',
+    },
+});
+
+export default GradientBackground;
