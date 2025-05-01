@@ -1,22 +1,71 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+    View,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    SafeAreaView,
+    StatusBar,
+    Dimensions,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Text } from '@/components/ui/text';
+import { Text as UiText } from '@/components/ui/text';
+import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
+import { useRouter } from 'expo-router';
 
-const GradientBackground = () => {
+const { width } = Dimensions.get('window');
+
+const ElectricityConsumptionScreen = () => {
+    const router = useRouter(); // Initialize the router
+    const [kwh, setKwh] = useState('');
+
     return (
-        <LinearGradient
-            colors={['#ffffff', '#f1ffdc']}
-            style={styles.background}
-        >
-            <View style={styles.container}>
-                <Text size='4xl' bold={true} style={styles.text}>
-                    Welcome to the Gradient Screen
-                </Text>
-                <Text size='lg' style={styles.text2}>
-                    This is a replicated gradient background.
-                </Text>
-            </View>
+        <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
+            <SafeAreaView style={styles.container}>
+                <StatusBar barStyle="dark-content" />
+
+                {/* Progress Bar */}
+                <View style={styles.progressBarContainer}>
+                    <Progress value={100} size="xs"    style={styles.progressBar}>
+                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
+                    </Progress>
+                </View>
+
+                <View style={styles.contentContainer}>
+                    <UiText size="xl" bold style={styles.questionText}>
+                    What percentage of your electricity consumption is from renewable sources like rooftop solar?
+                    </UiText>
+
+                    <TextInput
+                        style={styles.input}
+                        placeholder="in %"
+                        placeholderTextColor="#999"
+                        keyboardType="numeric"
+                        value={kwh}
+                        onChangeText={setKwh}
+                    />
+
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            style={styles.skipButton}
+                            onPress={() => router.push('/fuel')}
+                        >
+                            <UiText size="lg" style={styles.skipButtonText}>
+                                Skip
+                            </UiText>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.continueButton}
+                            onPress={() => router.push({ pathname: '/fuel', params: { kwh } })} 
+                        >
+                            <UiText size="lg" bold style={styles.continueButtonText}>
+                                Continue
+                            </UiText>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </SafeAreaView>
         </LinearGradient>
     );
 };
@@ -27,17 +76,82 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        justifyContent: 'center',
+        backgroundColor: 'transparent',
+    },
+    progressBarContainer: {
+        width: '40%',
+        height: 4,
+        backgroundColor: 'transparent',
+        marginTop: 20,
+        alignSelf: 'center',
+        paddingBottom: 24,
+    },
+    progressBar: {
+        width: '40%', // Retain the same size as the original progress bar
+        height: 4,
+        backgroundColor: '#e0e0e0', // Background color for the progress bar
+        borderRadius: 2,
+    },
+    progressFilledTrack: {
+        backgroundColor: '#a4e22b', // Green color for the filled track
+        height: '100%',
+        borderRadius: 2,
+    },
+    contentContainer: {
+        paddingHorizontal: 20,
+        marginTop: 30,
         alignItems: 'center',
     },
-    text: {
-        color: '#000',
-        paddingTop: 40,
+    questionText: {
+        maxWidth: '40%',
+        fontWeight: 'bold',
+        fontSize: 24,
+        color: '#15181e',
+        textAlign: 'center',
+        marginBottom: 20,
     },
-    text2: {
+    input: {
+        width: '40%',
+        height: 50,
+        borderRadius: 25,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        paddingHorizontal: 16,
+        fontSize: 16,
+        backgroundColor: 'white',
+        marginVertical: 20,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        width: '40%',
+        marginTop: 10,
+        gap: 24,
+    },
+    skipButton: {
+        width: 200,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#86B049',
+        backgroundColor: 'transparent',
+    },
+    skipButtonText: {
+        color: '#86B049',
+    },
+    continueButton: {
+        width: 200,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#a4e22b',
+    },
+    continueButtonText: {
         color: '#000',
-        paddingTop: 20,
     },
 });
 
-export default GradientBackground;
+export default ElectricityConsumptionScreen;

@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
+import { Radio, RadioGroup } from '@/components/ui/radio';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
 
@@ -17,39 +18,56 @@ const { width } = Dimensions.get('window');
 
 const ElectricityConsumptionScreen = () => {
     const router = useRouter(); // Initialize the router
-    const [kwh, setKwh] = useState('');
+    const [selectedOption, setSelectedOption] = useState('');
 
+    const options = [
+        { label: 'Vegan', value: 'vegan' },
+        { label: 'Vegetarian', value: 'vegetarian' },
+        { label: 'Non-Vegetarian (Mostly)', value: 'non-veg-mostly' },
+        { label: 'Non-Vegetarian (Sometimes)', value: 'non-veg-sometimes' },
+        { label: 'Non-Vegetarian (Rarely)', value: 'non-veg-rarely' },
+    ];
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
 
-                {/* Progress Bar */}
-                <View style={styles.progressBarContainer}>
-                    <Progress value={50} size="xs"    style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
-                    </Progress>
-                </View>
+                
 
                 <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                        What is your annual electricity consumption in kWh?
+                    What's your meal preference for the year?
                     </UiText>
-
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Enter kWh"
-                        placeholderTextColor="#999"
-                        keyboardType="numeric"
-                        value={kwh}
-                        onChangeText={setKwh}
-                    />
+                   
+                    {/* Radio Options */}
+                <RadioGroup
+                    value={selectedOption}
+                    onChange={(value) => setSelectedOption(value)}
+                    style={styles.radioGroup}
+                >
+                    {options.map((option) => (
+                        <TouchableOpacity
+                            key={option.value}
+                            style={[
+                                styles.radioBox,
+                                selectedOption === option.value && styles.radioBoxSelected,
+                            ]}
+                            onPress={() => setSelectedOption(option.value)}
+                        >
+                            <Radio value={option.value} />
+                            <UiText size="md" style={styles.radioLabel}>
+                                {option.label}
+                            </UiText>
+                        </TouchableOpacity>
+                    ))}
+                </RadioGroup>
+                 
 
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={styles.skipButton}
-                            onPress={() => router.push('/electricity2')}
+                            onPress={() => router.push('/home')}
                         >
                             <UiText size="lg" style={styles.skipButtonText}>
                                 Skip
@@ -58,7 +76,8 @@ const ElectricityConsumptionScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/electricity2', params: { kwh } })} 
+                            onPress={() =>   router.push({ pathname: '/home', params: { mealPreference: selectedOption } })
+} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -122,11 +141,31 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         marginVertical: 20,
     },
+    radioGroup: {
+        marginTop: 20,
+    },
+    radioBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f6ffec',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#d4e8c2',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        marginBottom: 10,
+    },
+    radioBoxSelected: {
+        borderColor: '#86B049', // Highlight selected option
+    },
+    radioLabel: {
+        marginLeft: 10,
+        color: '#15181e',
+    },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        width: '40%',
-        marginTop: 10,
+        marginTop: 20,
         gap: 24,
     },
     skipButton: {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     View,
-    Text,
+    TextInput,
     TouchableOpacity,
     StyleSheet,
     SafeAreaView,
@@ -9,25 +9,15 @@ import {
     Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
+import { Text as UiText } from '@/components/ui/text';
+import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
-const HouseholdScreen = () => {
+const ElectricityConsumptionScreen = () => {
     const router = useRouter(); // Initialize the router
-    const [count, setCount] = useState(0);
-
-    const increment = () => {
-        if (count < 6) {
-            setCount(count + 1);
-        }
-    };
-    const decrement = () => {
-        if (count > 0) {
-            setCount(count - 1);
-        }
-    };
+    const [AirTravel , setAirTravel] = useState('');
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -36,41 +26,42 @@ const HouseholdScreen = () => {
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
-                    <View style={styles.progressBar} />
+                    <Progress value={11.11} size="xs"    style={styles.progressBar}>
+                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
+                    </Progress>
                 </View>
 
-                {/* Question */}
                 <View style={styles.contentContainer}>
-                    <Text style={styles.questionText}>
-                        How many people live in your household?
-                    </Text>
+                    <UiText size="xl" bold style={styles.questionText}>
+                    Approximate distance traveled via air travel in a year?
+                    </UiText>
 
-                    {/* Counter */}
-                    <View style={styles.counterContainer}>
-                        <TouchableOpacity style={styles.circleButton} onPress={decrement}>
-                            <Ionicons name="remove" size={24} color="#fff" />
-                        </TouchableOpacity>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="in kms"
+                        placeholderTextColor="#999"
+                        keyboardType="numeric"
+                        value={AirTravel}
+                        onChangeText={setAirTravel}
+                    />
 
-                        <Text style={styles.countText}>{count}</Text>
-
-                        <TouchableOpacity style={styles.circleButton} onPress={increment}>
-                            <Ionicons name="add" size={24} color="#fff" />
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* Buttons */}
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={styles.skipButton}
-                            onPress={() => router.push('/electricity')}                        >
-                            <Text style={styles.skipButtonText}>Skip</Text>
+                            onPress={() => router.push('/travel2')}
+                        >
+                            <UiText size="lg" style={styles.skipButtonText}>
+                                Skip
+                            </UiText>
                         </TouchableOpacity>
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/electricity', params: { count } })}
+                            onPress={() => router.push({ pathname: '/travel2', params: {AirTravel} })} 
                         >
-                            <Text style={styles.continueButtonText}>Continue</Text>
+                            <UiText size="lg" bold style={styles.continueButtonText}>
+                                Continue
+                            </UiText>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -88,19 +79,23 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     progressBarContainer: {
-        width: '100%',
+        width: '40%',
         height: 4,
         backgroundColor: 'transparent',
         marginTop: 20,
-        alignItems: 'center',
+        alignSelf: 'center',
         paddingBottom: 24,
     },
     progressBar: {
-        width: '40%',
+        width: '40%', // Retain the same size as the original progress bar
         height: 4,
-        backgroundColor: '#a4e22b',
-        marginTop: 20,
-        alignItems: 'center',
+        backgroundColor: '#e0e0e0', // Background color for the progress bar
+        borderRadius: 2,
+    },
+    progressFilledTrack: {
+        backgroundColor: '#a4e22b', // Green color for the filled track
+        height: '100%',
+        borderRadius: 2,
     },
     contentContainer: {
         paddingHorizontal: 20,
@@ -108,42 +103,28 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     questionText: {
-        maxWidth: '80%',
+        maxWidth: '40%',
         fontWeight: 'bold',
         fontSize: 24,
         color: '#15181e',
         textAlign: 'center',
         marginBottom: 20,
     },
-    counterContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 40,
-        marginVertical: 32,
-    },
-    circleButton: {
-        width: 64,
-        height: 64,
-        borderRadius: 32,
-        backgroundColor: '#000',
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 5,
-    },
-    countText: {
-        fontSize: 32,
-        color: '#000',
-        fontWeight: '600',
+    input: {
+        width: '40%',
+        height: 50,
+        borderRadius: 25,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        paddingHorizontal: 16,
+        fontSize: 16,
+        backgroundColor: 'white',
+        marginVertical: 20,
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        width: '80%',
+        width: '40%',
         marginTop: 10,
         gap: 24,
     },
@@ -159,8 +140,6 @@ const styles = StyleSheet.create({
     },
     skipButtonText: {
         color: '#86B049',
-        fontSize: 16,
-        fontWeight: '500',
     },
     continueButton: {
         width: 200,
@@ -172,9 +151,7 @@ const styles = StyleSheet.create({
     },
     continueButtonText: {
         color: '#000',
-        fontSize: 16,
-        fontWeight: '500',
     },
 });
 
-export default HouseholdScreen;
+export default ElectricityConsumptionScreen;
