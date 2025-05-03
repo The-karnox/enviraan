@@ -10,28 +10,38 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
 import { CircleIcon } from '@/components/ui/icon';
+import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
 
-const MealPreferenceScreen = () => {
+const Refrigerant = () => {
     const router = useRouter();
     const [selectedOption, setSelectedOption] = useState('');
 
     const options = [
-        { label: 'Vegan', value: 'vegan' },
-        { label: 'Vegetarian', value: 'vegetarian' },
-        { label: 'Non-Vegetarian (Mostly)', value: 'non-veg-mostly' },
-        { label: 'Non-Vegetarian (Sometimes)', value: 'non-veg-sometimes' },
-        { label: 'Non-Vegetarian (Rarely)', value: 'non-veg-rarely' },
+        { label: 'R-134a', value: 'R-134a' },
+        { label: 'R-410A', value: 'R-410A' },
+        { label: 'R-22', value: 'R-22' },
+        { label: 'R-404A', value: 'R-404A' },
+        { label: 'R-32', value: 'R-32' },
+        { label: 'CO₂', value: 'CO₂' },
+        { label: 'Other', value: 'Other' },
+
     ];
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
+                <View style={styles.progressBarContainer}>
+                    <Progress value={84} size="xs"    style={styles.progressBar}>
+                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
+                    </Progress>
+                </View>
+
 
                 {/* Question */}
                 <UiText size="xl" bold style={styles.questionText}>
-                    What's your meal preference for the year?
+                    What type of vehicles are mostly used?
                 </UiText>
 
                 {/* Radio Options */}
@@ -69,7 +79,7 @@ const MealPreferenceScreen = () => {
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={styles.skipButton}
-                        onPress={() => router.push('/home')} // Navigate without saving
+                        onPress={() => router.push('/DirectEmissions7')} // Navigate without saving
                     >
                         <UiText size="lg" style={styles.skipButtonText}>
                             Skip
@@ -79,7 +89,7 @@ const MealPreferenceScreen = () => {
                     <TouchableOpacity
                         style={styles.continueButton}
                         onPress={() =>
-                            router.push({ pathname: '/home', params: { mealPreference: selectedOption } })
+                            router.push({ pathname: '/DirectEmissions7', params: { TypeOfRefrigreant : selectedOption } })
                         } // Navigate with selected option
                     >
                         <UiText size="lg" bold style={styles.continueButtonText}>
@@ -100,6 +110,25 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 20,
         paddingVertical: 30,
+    },
+    progressBarContainer: {
+        width: '40%',
+        height: 4,
+        backgroundColor: 'transparent',
+        marginTop: 20,
+        alignSelf: 'center',
+        paddingBottom: 24,
+    },
+    progressBar: {
+        width: '40%', // Retain the same size as the original progress bar
+        height: 4,
+        backgroundColor: '#e0e0e0', // Background color for the progress bar
+        borderRadius: 2,
+    },
+    progressFilledTrack: {
+        backgroundColor: '#a4e22b', // Green color for the filled track
+        height: '100%',
+        borderRadius: 2,
     },
     questionText: {
         color: '#15181e',
@@ -169,4 +198,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default MealPreferenceScreen;
+export default Refrigerant;

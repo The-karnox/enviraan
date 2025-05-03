@@ -2,36 +2,40 @@ import React, { useState } from 'react';
 import {
     View,
     TouchableOpacity,
+    TextInput,
     StyleSheet,
     SafeAreaView,
     StatusBar,
 } from 'react-native';
+  import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
 import { CircleIcon } from '@/components/ui/icon';
 import { useRouter } from 'expo-router';
 
-const MealPreferenceScreen = () => {
+const others9 = () => {
     const router = useRouter();
     const [selectedOption, setSelectedOption] = useState('');
-
     const options = [
-        { label: 'Vegan', value: 'vegan' },
-        { label: 'Vegetarian', value: 'vegetarian' },
-        { label: 'Non-Vegetarian (Mostly)', value: 'non-veg-mostly' },
-        { label: 'Non-Vegetarian (Sometimes)', value: 'non-veg-sometimes' },
-        { label: 'Non-Vegetarian (Rarely)', value: 'non-veg-rarely' },
+        { label: 'Yes', value: 'Yes' },
+        { label: 'No', value: 'no' },
     ];
+    
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
+                <View style={styles.progressBarContainer}>
+                    <Progress value={16} size="xs"    style={styles.progressBar}>
+                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
+                    </Progress>
+                </View>
 
                 {/* Question */}
                 <UiText size="xl" bold style={styles.questionText}>
-                    What's your meal preference for the year?
+                    Does your company have a formal sustainability policy?
                 </UiText>
 
                 {/* Radio Options */}
@@ -51,11 +55,7 @@ const MealPreferenceScreen = () => {
                         >
                             <Radio value={option.value}>
                                 <RadioIndicator>
-                                    <RadioIcon as={CircleIcon}
-                                     style={[
-                                        styles.radioIcon,
-                                        selectedOption === option.value && styles.radioIconSelected,
-                                    ]}/>
+                                    <RadioIcon as={CircleIcon} style={[styles.radioIcon, selectedOption === option.value && styles.radioIconSelected]}/>
                                 </RadioIndicator>
                             </Radio>
                             <UiText size="md" style={styles.radioLabel}>
@@ -69,7 +69,7 @@ const MealPreferenceScreen = () => {
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={styles.skipButton}
-                        onPress={() => router.push('/home')} // Navigate without saving
+                        onPress={() => router.push('/others10')} // Navigate without saving
                     >
                         <UiText size="lg" style={styles.skipButtonText}>
                             Skip
@@ -79,8 +79,12 @@ const MealPreferenceScreen = () => {
                     <TouchableOpacity
                         style={styles.continueButton}
                         onPress={() =>
-                            router.push({ pathname: '/home', params: { mealPreference: selectedOption } })
-                        } // Navigate with selected option
+                            router.push({ pathname: '/others10',
+                                params: {
+                                    others9: selectedOption
+                                },
+                             })
+                        } 
                     >
                         <UiText size="lg" bold style={styles.continueButtonText}>
                             Continue
@@ -100,6 +104,20 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 20,
         paddingVertical: 30,
+    },
+     progressBarContainer: {
+        width: '40%',
+        height: 4,
+        backgroundColor: 'transparent',
+        marginTop: 20,
+        alignSelf: 'center',
+        paddingBottom: 24,
+    },
+    progressBar: {
+        width: '40%', // Retain the same size as the original progress bar
+        height: 4,
+        backgroundColor: '#e0e0e0', // Background color for the progress bar
+        borderRadius: 2,
     },
     questionText: {
         color: '#15181e',
@@ -137,6 +155,34 @@ const styles = StyleSheet.create({
     radioIconSelected: {
         color: '#a4e22b', // Green color for the selected icon
     },
+    additionalQuestionContainer: {
+        marginTop: 20,
+        alignItems: 'center',
+    },
+    selectBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        backgroundColor: '#f6ffec',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#d4e8c2',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        marginBottom: 10,
+        width: '110%',
+    },
+    input: {
+        width: '40%',
+        height: 50,
+        borderRadius: 25,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        paddingHorizontal: 16,
+        fontSize: 16,
+        backgroundColor: 'white',
+        marginVertical: 20,
+    },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -169,4 +215,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default MealPreferenceScreen;
+export default others9;

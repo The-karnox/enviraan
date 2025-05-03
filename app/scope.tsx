@@ -1,96 +1,132 @@
-import React from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, ScrollView, TouchableOpacity, Platform, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { VStack } from '@/components/ui/vstack';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { Card } from '@/components/ui/card';
-import { Checkbox, CheckboxIndicator, CheckboxLabel, CheckboxIcon } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
+import { Checkbox, CheckboxIndicator, CheckboxIcon } from '@/components/ui/checkbox';
 import { useRouter } from 'expo-router';
 import { CheckIcon } from '@/components/ui/icon';
-import { useState } from 'react';
 
-const Modules = () => {
+const Scopes = () => {
     const router = useRouter();
-    const [selectedModules, setSelectedModules] = useState([]);
+    const [selectedScopes, setSelectedScopes] = useState([]);
 
-    const modules = [
+    const scopes = [
         {
             title: 'Scope 1: Direct Emissions',
-            description: 'Emissions from sources owned or controlled by the organization',
-            route: './household',
+            description: 'Emissions from sources owned or controlled by the organization.',
+            route: './DirectEmissions',
         },
         {
-            title: 'Scope 2: Inirect Emissions',
-            description: 'Emissions from purchased electricity, steam, heating, and cooling',
-            route: './electricity',
+            title: 'Scope 2: Indirect Emissions',
+            description: 'Emissions from purchased electricity, steam, heating, and cooling.',
+            route: './IndirectEmissions',
         },
         {
-            title: 'Scope 3: Other Inirect Emissions',
-            description: 'Emissions from sources not owned or controlled by the company but part of the value chain',
-            route: './fuel',
+            title: 'Scope 3: Other Indirect Emissions',
+            description: 'Emissions from sources not owned or controlled by the company but part of the value chain.',
+            route: './OtherIndirectEmissions',
         },
         {
             title: 'Scope 4: Avoided Emissions',
-            description: "Emissions avoided by products, services, or initiatives that contribute to emission reductions beyond the organization's direct and indirect footprint.",
-            route: './travel',
+            description: 'Emissions avoided by products, services, or initiatives that contribute to emission reductions.',
+            route: './AvoidedEmissions',
         },
-      
     ];
 
-    return (
-        <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
-            <Box style={styles.container}>
-                <Text size="5xl" bold={true} style={styles.title}>
-                    Scopes
-                </Text>
-                <Text size="lg" style={styles.subtitle}>
-                    Go through each scope and address the questionnaire in order to get your carbon footprint.
-                </Text>
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <VStack space="md" style={styles.moduleList}>
-                    {modules.map((module, index) => (
-                        <Card
-                            key={index}
-                            size="md"
-                            variant="elevated"
-                            style={styles.card}
-                            
-                        >
-                            <Box style={styles.cardContent}>
-                                <Checkbox style={styles.checkbox} size="md">
-                                    <CheckboxIndicator className="data-[checked=true]:bg-[#9dfc03]">
-                                        <CheckboxIcon as={CheckIcon} style={styles.checkboxIcon} />
-                                    </CheckboxIndicator>
-                                </Checkbox>
-                                <Box style={styles.textContainer}>
-                                    <Text size="lg" bold={true} style={styles.cardTitle}>
-                                        {module.title}
-                                    </Text>
-                                    <Text size="sm" style={styles.cardDescription}>
-                                        {module.description}
-                                    </Text>
-                                </Box>
-                            </Box>
-                        </Card>
-                    ))}
-                </VStack>
-                </ScrollView>
-                <TouchableOpacity
-                    style={styles.nextButton}
-                    onPress={() => router.push('./next')}
-                >
-                    <Text size="lg" style={styles.nextButtonText}>
-                        Next
+    const renderContent = () => {
+        if (Platform.OS === 'web') {
+            // Web-specific design
+            return (
+                <View style={styles.webContainer}>
+                    <Text size="5xl" bold={true} style={styles.webTitle}>
+                        Scopes
                     </Text>
-                </TouchableOpacity>
-            </Box>
-        </LinearGradient>
-    );
+                    <Text size="lg" style={styles.webSubtitle}>
+                        Go through each scope and address the questionnaire in order to get your carbon footprint.
+                    </Text>
+                    <View style={styles.webGrid}>
+                        {scopes.map((scope, index) => (
+                            <View key={index} style={styles.webCard}>
+                                <Text size="lg" bold={true} style={styles.webCardTitle}>
+                                    {scope.title}
+                                </Text>
+                                <Text size="sm" style={styles.webCardDescription}>
+                                    {scope.description}
+                                </Text>
+                                <TouchableOpacity
+                                    style={styles.webButton}
+                                    onPress={() => router.push(scope.route)}
+                                >
+                                    <Text size="lg" style={styles.webButtonText}>
+                                        Continue
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))}
+                    </View>
+                </View>
+            );
+        } else {
+            // Mobile-specific design
+            return (
+                <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
+                    <Box style={styles.container}>
+                        <Text size="5xl" bold={true} style={styles.title}>
+                            Scopes
+                        </Text>
+                        <Text size="lg" style={styles.subtitle}>
+                            Go through each scope and address the questionnaire in order to get your carbon footprint.
+                        </Text>
+                        <ScrollView contentContainerStyle={styles.scrollContainer}>
+                            <VStack space="md" style={styles.scopeList}>
+                                {scopes.map((scope, index) => (
+                                    <Card
+                                        key={index}
+                                        size="md"
+                                        variant="elevated"
+                                        style={styles.card}
+                                    >
+                                        <Box style={styles.cardContent}>
+                                            <Checkbox style={styles.checkbox} size="md">
+                                                <CheckboxIndicator className="data-[checked=true]:bg-[#9dfc03]">
+                                                    <CheckboxIcon as={CheckIcon} style={styles.checkboxIcon} />
+                                                </CheckboxIndicator>
+                                            </Checkbox>
+                                            <Box style={styles.textContainer}>
+                                                <Text size="lg" bold={true} style={styles.cardTitle}>
+                                                    {scope.title}
+                                                </Text>
+                                                <Text size="sm" style={styles.cardDescription}>
+                                                    {scope.description}
+                                                </Text>
+                                            </Box>
+                                        </Box>
+                                    </Card>
+                                ))}
+                            </VStack>
+                        </ScrollView>
+                        <TouchableOpacity
+                            style={styles.nextButton}
+                            onPress={() => router.push('./next')}
+                        >
+                            <Text size="lg" style={styles.nextButtonText}>
+                                Next
+                            </Text>
+                        </TouchableOpacity>
+                    </Box>
+                </LinearGradient>
+            );
+        }
+    };
+
+    return renderContent();
 };
 
 const styles = StyleSheet.create({
+    // Common styles
     background: {
         flex: 1,
     },
@@ -100,7 +136,7 @@ const styles = StyleSheet.create({
         paddingVertical: 30,
     },
     scrollContainer: {
-        paddingBottom: 20, // Add padding to avoid content being cut off
+        paddingBottom: 20,
     },
     title: {
         color: '#000',
@@ -110,7 +146,7 @@ const styles = StyleSheet.create({
         color: '#000',
         marginBottom: 20,
     },
-    moduleList: {
+    scopeList: {
         flex: 1,
     },
     card: {
@@ -126,16 +162,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     checkbox: {
-        position: 'absolute', 
-        top: 5, 
+        position: 'absolute',
+        top: 5,
         left: 5,
     },
     checkboxIcon: {
         color: '#15181e',
     },
-   
-    
-    
     textContainer: {
         marginLeft: 40,
         marginRight: 10,
@@ -162,6 +195,59 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 18,
     },
+
+    // Web-specific styles
+    webContainer: {
+        flex: 1,
+        padding: 40,
+        backgroundColor: '#f6ffec',
+    },
+    webTitle: {
+        color: '#2d4901',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    webSubtitle: {
+        color: '#000',
+        textAlign: 'center',
+        marginBottom: 30,
+    },
+    webGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+    },
+    webCard: {
+        backgroundColor: '#ffffff',
+        borderRadius: 10,
+        padding: 20,
+        marginBottom: 20,
+        width: '45%',
+        borderWidth: 1,
+        borderColor: '#d4e8c2',
+        alignItems: 'center',
+    },
+    webCardTitle: {
+        color: '#15181e',
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    webCardDescription: {
+        color: '#a8b3c4',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    webButton: {
+        backgroundColor: '#9dfc03',
+        borderRadius: 25,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        alignItems: 'center',
+    },
+    webButtonText: {
+        color: '#000',
+        fontWeight: 'bold',
+    },
 });
 
-export default Modules;
+export default Scopes;

@@ -23,7 +23,15 @@ const GradientBackground = () => {
                         onPress={() => (window.location.href = '/modules')}
                     >
                         <Text size="lg" style={styles.webButtonText}>
-                            Strat Calculation  
+                           I'm an Individual
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.webButton}
+                        onPress={() => (window.location.href = '/scope')}
+                    >
+                        <Text size="lg" style={styles.webButtonText}>
+                            for Businesses
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -147,6 +155,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#9dfc03',
         paddingVertical: 15,
         paddingHorizontal: 200,
+        marginBottom: 20,
         borderRadius: 35,
         alignItems: 'center',
     },
