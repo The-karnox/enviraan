@@ -3,6 +3,7 @@ import { View, StyleSheet, Image, TouchableOpacity, Platform } from 'react-nativ
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text } from '@/components/ui/text';
 import { useRouter } from 'expo-router';
+import { CarbonFootprintProvider } from './CarbonFootprintContext'; // Import the provider
 
 const GradientBackground = () => {
     const router = useRouter();
@@ -16,14 +17,14 @@ const GradientBackground = () => {
                         Let's Calculate Your Carbon Footprint
                     </Text>
                     <Text size="lg" style={styles.webSubtitle} numberOfLines={3}>
-                       Answer a few simple questions about your lifestyle and activities to see your impact on the environment. It only takes a few minutes to get insights and start making a difference!
+                        Answer a few simple questions about your lifestyle and activities to see your impact on the environment. It only takes a few minutes to get insights and start making a difference!
                     </Text>
                     <TouchableOpacity
                         style={styles.webButton}
                         onPress={() => (window.location.href = '/modules')}
                     >
                         <Text size="lg" style={styles.webButtonText}>
-                           I'm an Individual
+                            I'm an Individual
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -78,6 +79,15 @@ const GradientBackground = () => {
 
     // Return the rendered content
     return renderContent();
+};
+
+// Wrap the GradientBackground component with the CarbonFootprintProvider
+const App = () => {
+    return (
+        <CarbonFootprintProvider>
+            <GradientBackground />
+        </CarbonFootprintProvider>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -144,7 +154,7 @@ const styles = StyleSheet.create({
     },
     webSubtitle: {
         color: '#000',
-        maxWidth:800,
+        maxWidth: 800,
         textAlign: 'justify', // Align text like a paragraph
         marginBottom: 30,
         paddingHorizontal: 40,
@@ -165,4 +175,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default GradientBackground;
+export default App;

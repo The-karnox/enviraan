@@ -11,9 +11,11 @@ import { Text as UiText } from '@/components/ui/text';
 import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
 import { CircleIcon } from '@/components/ui/icon';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
 
 const MealPreferenceScreen = () => {
     const router = useRouter();
+    const { updateCarbonData } = useCarbonFootprint();
     const [selectedOption, setSelectedOption] = useState('');
 
     const options = [
@@ -23,6 +25,15 @@ const MealPreferenceScreen = () => {
         { label: 'Non-Vegetarian (Sometimes)', value: 'non-veg-sometimes' },
         { label: 'Non-Vegetarian (Rarely)', value: 'non-veg-rarely' },
     ];
+
+    const handleContinue = () => {
+        if (!selectedOption) {
+            alert('Please select a meal preference.');
+            return;
+        }
+        updateCarbonData('mealPreference', selectedOption); // Save the selected option to the context
+        router.push('/home'); // Navigate to the next page
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -37,7 +48,7 @@ const MealPreferenceScreen = () => {
                 {/* Radio Options */}
                 <RadioGroup
                     value={selectedOption}
-                    onChange={(value) => setSelectedOption(value)}
+                  
                     style={styles.radioGroup}
                 >
                     {options.map((option) => (
@@ -78,9 +89,7 @@ const MealPreferenceScreen = () => {
 
                     <TouchableOpacity
                         style={styles.continueButton}
-                        onPress={() =>
-                            router.push({ pathname: '/home', params: { mealPreference: selectedOption } })
-                        } // Navigate with selected option
+                        onPress={handleContinue}
                     >
                         <UiText size="lg" bold style={styles.continueButtonText}>
                             Continue
@@ -122,7 +131,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 15,
         marginBottom: 10,
-        width: '30%',
+        width: '90%',
+        maxWidth: 300,
     },
     radioBoxSelected: {
         borderColor: '#86B049', // Highlight selected option

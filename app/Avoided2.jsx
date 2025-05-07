@@ -26,7 +26,7 @@ const ElectricityConsumptionScreen = () => {
             return;
         }
         router.push({
-            pathname: './Avoided2',
+            pathname: './Avoided3',
             params: { avoidedEmissionsText: text }, // Pass the text to the next screen
         });
     };
@@ -38,14 +38,14 @@ const ElectricityConsumptionScreen = () => {
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
-                    <Progress value={33} size="xs" style={styles.progressBar}>
+                    <Progress value={66} size="xs" style={styles.progressBar}>
                         <ProgressFilledTrack className="bg-[#a4e22b]"/>
                     </Progress>
                 </View>
 
                 <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                    Do your products or services help customers reduce emissions? If yes, can you estimate the avoided emissions?
+                    Does your business have recycling or reuse programs to cut emissions? (e.g., product take- back, refurbishment, or sustainability regulations)
                     </UiText>
 
                     <Textarea
@@ -72,7 +72,7 @@ const ElectricityConsumptionScreen = () => {
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={styles.skipButton}
-                            onPress={() => router.push('./Avoided2')}
+                            onPress={() => router.push('./Avoided3')}
                         >
                             <UiText size="lg" style={styles.skipButtonText}>
                                 Skip
@@ -81,7 +81,7 @@ const ElectricityConsumptionScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: './Avoided2', params: { avoidedEmissionsText: text }})} 
+                            onPress={() => router.push({ pathname: './Avoided3', params: { avoidedEmissionsText: text }})} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue

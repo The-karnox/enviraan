@@ -38,14 +38,14 @@ const ElectricityConsumptionScreen = () => {
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
-                    <Progress value={33} size="xs" style={styles.progressBar}>
+                    <Progress value={100} size="xs" style={styles.progressBar}>
                         <ProgressFilledTrack className="bg-[#a4e22b]"/>
                     </Progress>
                 </View>
 
                 <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                    Do your products or services help customers reduce emissions? If yes, can you estimate the avoided emissions?
+                    Have you invested in carbon offset projects? (e.g., renewable energy, reforestation, or similar initiatives)
                     </UiText>
 
                     <Textarea

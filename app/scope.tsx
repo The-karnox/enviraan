@@ -27,7 +27,7 @@ const Scopes = () => {
         {
             title: 'Scope 3: Other Indirect Emissions',
             description: 'Emissions from sources not owned or controlled by the company but part of the value chain.',
-            route: './OtherIndirectEmissions',
+            route: './Others',
         },
         {
             title: 'Scope 4: Avoided Emissions',

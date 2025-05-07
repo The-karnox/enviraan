@@ -30,6 +30,7 @@
     "@gluestack-ui/radio": "^0.1.40",
     "@gluestack-ui/select": "^0.1.31",
     "@gluestack-ui/slider": "^0.1.32",
+    "@gluestack-ui/textarea": "^0.1.25",
     "@gluestack-ui/toast": "^1.0.8",
     "@legendapp/motion": "^2.4.0",
     "@lottiefiles/dotlottie-react": "^0.13.4",

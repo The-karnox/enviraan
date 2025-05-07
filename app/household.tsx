@@ -11,11 +11,13 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
 
 const { width } = Dimensions.get('window');
 
 const HouseholdScreen = () => {
     const router = useRouter(); // Initialize the router
+    const { updateCarbonData } = useCarbonFootprint(); 
     const [count, setCount] = useState(0);
 
     const increment = () => {
@@ -27,6 +29,11 @@ const HouseholdScreen = () => {
         if (count > 0) {
             setCount(count - 1);
         }
+    };
+    
+    const handleContinue = () => {
+        updateCarbonData('numOfMembers', count); // Save the count to the context
+        router.push('/electricity'); // Navigate to the next page
     };
 
     return (
@@ -68,7 +75,7 @@ const HouseholdScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/electricity', params: { count } })}
+                            onPress={handleContinue}
                         >
                             <Text style={styles.continueButtonText}>Continue</Text>
                         </TouchableOpacity>
