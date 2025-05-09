@@ -54,7 +54,7 @@ const ElectricityConsumptionScreen = () => {
                         isReadOnly={false}
                         isInvalid={false}
                         isDisabled={false}
-                        className="w-64">
+                        className="w-64 h-50">
                     <TextareaInput
                             placeholder="Your text goes here..."
                             value={text}
@@ -72,7 +72,7 @@ const ElectricityConsumptionScreen = () => {
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={styles.skipButton}
-                            onPress={() => router.push('./Avoided2')}
+                            onPress={() => router.push('./homeEnterprise')}
                         >
                             <UiText size="lg" style={styles.skipButtonText}>
                                 Skip
@@ -81,7 +81,7 @@ const ElectricityConsumptionScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: './Avoided2', params: { avoidedEmissionsText: text }})} 
+                            onPress={() => router.push({ pathname: './homeEnterprise', params: { avoidedEmissionsText: text }})} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue

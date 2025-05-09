@@ -1,11 +1,8 @@
 { 
-  "homepage": "://The-karnox.github.io/enviraan",
   "name": "enviraan",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d web-build",
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "DARK_MODE=media expo start --android",

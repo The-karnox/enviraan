@@ -28,7 +28,7 @@ const others10 = () => {
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
                 <View style={styles.progressBarContainer}>
-                    <Progress value={16} size="xs"    style={styles.progressBar}>
+                    <Progress value={80} size="xs"    style={styles.progressBar}>
                         <ProgressFilledTrack className="bg-[#a4e22b]"/>
                     </Progress>
                 </View>

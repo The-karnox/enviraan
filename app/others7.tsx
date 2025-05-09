@@ -37,7 +37,7 @@ const others = () => {
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
-                    <Progress value={50} size="xs"    style={styles.progressBar}>
+                    <Progress value={56} size="xs"    style={styles.progressBar}>
                         <ProgressFilledTrack className="bg-[#a4e22b]"/>
                     </Progress>
                 </View>

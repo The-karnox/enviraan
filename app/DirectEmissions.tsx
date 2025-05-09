@@ -33,7 +33,7 @@ const { width } = Dimensions.get('window');
 
 const DirectEmissionsScreen = () => {
     const router = useRouter(); // Initialize the router
-    const [fuelTypes] = useState(['Diesel', 'Petrol', 'CNG', 'LPG', 'Coal', 'Charcoal']); // Set fuel types to state
+    const [fuelTypes] = useState(['diesel', 'petrol', 'cng', 'lpg', 'coal', 'charcoal']); // Set fuel types to state
     const { updateCarbonData } = useCarbonFootprint();
     const [selectedFuel, setSelectedFuel] = useState(''); // State for selected fuel
     const handleContinue = () => {
@@ -66,7 +66,9 @@ const DirectEmissionsScreen = () => {
                     <UiText size="xl" bold style={styles.questionText}>
                     What type of fuel does your company use for operations?
                     </UiText>
-                    <Select>
+                    <Select
+                    selectedValue={selectedFuel} // Bind the selected value to the state
+                    onValueChange={(value) => setSelectedFuel(value)} >
       <SelectTrigger variant="rounded" size="md" style={styles.selectBox}>
         <SelectInput placeholder="Select option" />
         <SelectIcon className="mr-3" as={ChevronDownIcon} />

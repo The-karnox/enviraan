@@ -12,12 +12,28 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
+
 
 const { width } = Dimensions.get('window');
 
-const ElectricityConsumptionScreen = () => {
+const ElectricBus = () => {
     const router = useRouter(); // Initialize the router
     const [eBusTravel , setEbusTravel] = useState('');
+    const { updateCarbonData } = useCarbonFootprint();
+    const handleContinue = () => {
+        if (!eBusTravel || isNaN(parseFloat(eBusTravel)) || parseFloat(eBusTravel) <= 0) {
+            alert('Please enter a valid electric bus travel distance in kms.');
+            return;
+        }
+            
+            // Save the electric bus travel distance to the context
+            updateCarbonData('electricBusTravel', parseFloat(eBusTravel));
+    
+            // Navigate to the next page
+            router.push('/travel7');
+    }
+
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -57,7 +73,7 @@ const ElectricityConsumptionScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/travel7', params: {eBusTravel} })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -154,4 +170,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ElectricityConsumptionScreen;
+export default ElectricBus;

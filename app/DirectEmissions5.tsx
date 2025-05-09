@@ -44,7 +44,7 @@ const DirectEmissions5 = () => {
                 <StatusBar barStyle="dark-content" />
                 <ScrollView contentContainerStyle={styles.scrollContent}>
                     <View style={styles.progressBarContainer}>
-                        <Progress value={70} size="xs" style={styles.progressBar}>
+                        <Progress value={62.5} size="xs" style={styles.progressBar}>
                             <ProgressFilledTrack className="bg-[#a4e22b]" />
                         </Progress>
                     </View>

@@ -13,9 +13,11 @@ import { Text as UiText } from '@/components/ui/text';
 import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
 import { CircleIcon } from '@/components/ui/icon';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext'; 
 
-const regen = () => {
+const temperature = () => {
     const router = useRouter();
+    const { updateCarbonData } = useCarbonFootprint(); 
     const [selectedOption, setSelectedOption] = useState('');
     const [quantity, setQuantity] = useState('');
 
@@ -23,14 +25,21 @@ const regen = () => {
         { label: 'Yes', value: 'Yes' },
         { label: 'No', value: 'no' },
     ];
-    
+    const handleContinue = () => {
+        // Save renewable energy data to the context
+        updateCarbonData('tempControl', selectedOption === 'Yes'); // Save if renewable energy is generated
+        updateCarbonData('consumptionForTempControl', parseFloat(quantity) || 0); // Save capacity in kWh
+
+        // Navigate to the next screen
+        router.push('/others');
+    }
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
                 <View style={styles.progressBarContainer}>
-                    <Progress value={75} size="xs"    style={styles.progressBar}>
+                    <Progress value={100} size="xs"    style={styles.progressBar}>
                         <ProgressFilledTrack className="bg-[#a4e22b]"/>
                     </Progress>
                 </View>
@@ -95,15 +104,7 @@ const regen = () => {
 
                     <TouchableOpacity
                         style={styles.continueButton}
-                        onPress={() =>
-                            router.push({ pathname: '/others',
-                                params: {
-                                    regen: selectedOption, // Pass whether the user uses generators
-                
-                                    Quantity: quantity, // Pass the entered quantity
-                                },
-                             })
-                        } 
+                        onPress={handleContinue} 
                     >
                         <UiText size="lg" bold style={styles.continueButtonText}>
                             Continue
@@ -234,4 +235,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default regen;
+export default temperature;

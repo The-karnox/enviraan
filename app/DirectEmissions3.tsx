@@ -55,7 +55,7 @@ const UseOfGenerators = () => {
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
                 <View style={styles.progressBarContainer}>
-                    <Progress value={42} size="xs" style={styles.progressBar}>
+                    <Progress value={37.5} size="xs" style={styles.progressBar}>
                         <ProgressFilledTrack className="bg-[#a4e22b]" />
                     </Progress>
                 </View>

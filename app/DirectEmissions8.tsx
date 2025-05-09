@@ -145,15 +145,7 @@ const ghgEmissions = () => {
 
                     <TouchableOpacity
                         style={styles.continueButton}
-                        onPress={() =>
-                            router.push({ pathname: '/IndirectEmissions',
-                                params: {
-                                    ghgEmissions: selectedOption, 
-                                    ghgType: type, 
-                                    Quantity: quantity, // Pass the entered quantity
-                                },
-                             })
-                        } 
+                        onPress={handleContinue                        } 
                     >
                         <UiText size="lg" bold style={styles.continueButtonText}>
                             Continue

@@ -50,7 +50,7 @@ const DirectEmissions2Screen = () => {
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
-                    <Progress value={28} size="xs"    style={styles.progressBar}>
+                    <Progress value={25} size="xs"    style={styles.progressBar}>
                         <ProgressFilledTrack className="bg-[#a4e22b]"/>
                     </Progress>
                 </View>

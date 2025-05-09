@@ -44,7 +44,7 @@ const Refrigerant = () => {
                 <StatusBar barStyle="dark-content" />
                 <ScrollView contentContainerStyle={styles.scrollContent}>
                     <View style={styles.progressBarContainer}>
-                        <Progress value={84} size="xs" style={styles.progressBar}>
+                        <Progress value={75} size="xs" style={styles.progressBar}>
                             <ProgressFilledTrack className="bg-[#a4e22b]" />
                         </Progress>
                     </View>
