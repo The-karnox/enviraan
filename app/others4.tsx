@@ -13,9 +13,11 @@ import { Text as UiText } from '@/components/ui/text';
 import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
 import { CircleIcon } from '@/components/ui/icon';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext'; 
 
 const trackEmissions = () => {
     const router = useRouter();
+    const { updateCarbonData } = useCarbonFootprint(); 
     const [selectedOption, setSelectedOption] = useState('');
     const [quantity, setQuantity] = useState('');
 
@@ -23,7 +25,13 @@ const trackEmissions = () => {
         { label: 'Yes', value: 'Yes' },
         { label: 'No', value: 'no' },
     ];
-    
+    const handleContinue = () => {
+        updateCarbonData('trackEmissionsTransportation', selectedOption === 'Yes'); // Save if emissions are tracked
+        updateCarbonData('estimatedEmissionsTransportation', parseFloat(quantity) || 0); // Save estimated emissions
+
+        // Navigate to the next screen
+        router.push('/others5');
+    }
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -95,15 +103,7 @@ const trackEmissions = () => {
 
                     <TouchableOpacity
                         style={styles.continueButton}
-                        onPress={() =>
-                            router.push({ pathname: '/others5',
-                                params: {
-                                    trackEmissions: selectedOption, // Pass whether the user uses generators
-                
-                                    Quantity: quantity, // Pass the entered quantity
-                                },
-                             })
-                        } 
+                        onPress={handleContinue} 
                     >
                         <UiText size="lg" bold style={styles.continueButtonText}>
                             Continue

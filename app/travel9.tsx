@@ -12,12 +12,27 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
+
 
 const { width } = Dimensions.get('window');
 
-const ElectricityConsumptionScreen = () => {
+const DieselConsumption = () => {
     const router = useRouter(); // Initialize the router
     const [diesel , setDiesel] = useState('');
+    const { updateCarbonData } = useCarbonFootprint();
+    const handleContinue = () => {
+        if (!diesel || isNaN(parseFloat(diesel)) || parseFloat(diesel) <= 0) {
+            alert('Please enter a valid diesel consumption in liters.');
+            return;
+        }
+    
+        // Save the diesel consumption to the context
+        updateCarbonData('Diesel', parseFloat(diesel));
+    
+        // Navigate to the next page
+        router.push('/meal');
+    }
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -57,7 +72,7 @@ const ElectricityConsumptionScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/meal', params: {diesel} })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -154,4 +169,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ElectricityConsumptionScreen;
+export default DieselConsumption;

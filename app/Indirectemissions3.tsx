@@ -13,19 +13,27 @@ import { Text as UiText } from '@/components/ui/text';
 import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
 import { CircleIcon } from '@/components/ui/icon';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext'; 
 
 const regen = () => {
     const router = useRouter();
+    const { updateCarbonData } = useCarbonFootprint(); 
     const [selectedOption, setSelectedOption] = useState('');
     const [quantity, setQuantity] = useState('');
-    const [fuelTypes] = useState(['Diesel', 'Petrol', 'CNG', 'LPG', 'Coal', 'Charcoal']);
-    const [type, setType] = useState(''); 
 
     const options = [
         { label: 'Yes', value: 'Yes' },
         { label: 'No', value: 'no' },
     ];
     
+    const handleContinue = () => {
+        // Save renewable energy data to the context
+        updateCarbonData('generatesRewnewable', selectedOption === 'Yes'); // Save if renewable energy is generated
+        updateCarbonData('capacityForRenewable', parseFloat(quantity) || 0); // Save capacity in kWh
+
+        // Navigate to the next screen
+        router.push('/IndirectEmissions4');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -97,15 +105,7 @@ const regen = () => {
 
                     <TouchableOpacity
                         style={styles.continueButton}
-                        onPress={() =>
-                            router.push({ pathname: '/IndirectEmissions4',
-                                params: {
-                                    regen: selectedOption, // Pass whether the user uses generators
-                
-                                    Quantity: quantity, // Pass the entered quantity
-                                },
-                             })
-                        } 
+                        onPress={handleContinue} 
                     >
                         <UiText size="lg" bold style={styles.continueButtonText}>
                             Continue

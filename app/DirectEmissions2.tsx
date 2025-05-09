@@ -25,13 +25,23 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import{ useCarbonFootprint } from './CarbonFootprintContext';
 
 const { width } = Dimensions.get('window');
 
 const DirectEmissions2Screen = () => {
     const router = useRouter(); // Initialize the router
     const [Quantity , setQuantity]  = useState('');
+    const { updateCarbonData } = useCarbonFootprint(); 
     const [metric, setMetric] = useState(''); 
+    const handleContinue = () => {
+        updateCarbonData('fuelAmount', Quantity); // Save Quantity as fuelAmount
+        updateCarbonData('Metric', metric); // Save Metric
+
+        // Navigate to the next screen
+        router.push('/DirectEmissions3');
+        
+    }
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -57,9 +67,9 @@ const DirectEmissions2Screen = () => {
                                             value={Quantity}
                                             onChangeText={setQuantity}
                                         />
-                    <Select
-                     value={metric} // Bind the selected value to the `metric` state
-                     onValueChange={(value) => setMetric(value)}>
+                                           <Select
+                                         selectedValue={metric} // Use `selectedValue` instead of `value`
+                                         onValueChange={(value) => setMetric(value)}>
       <SelectTrigger variant="rounded" size="md" style={styles.selectBox}>
         <SelectInput placeholder="Select option" />
         <SelectIcon className="mr-3" as={ChevronDownIcon} />
@@ -89,7 +99,7 @@ const DirectEmissions2Screen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/DirectEmissions3', params: {Quantity, Metric: metric} })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue

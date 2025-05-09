@@ -20,24 +20,32 @@ import { useRouter } from 'expo-router';
 import { Platform } from 'react-native';
 import { useCarbonFootprint } from './CarbonFootprintContext'; // Import the context
 import { LinearGradient } from 'expo-linear-gradient';
+import { calculateCarbonFootprint } from './indiFootprintcalculator';
 
 const { width, height } = Dimensions.get('window');
 
+
 const getCurrentDate = () => {
   const date = new Date();
-  const options = { year: 'numeric', month: 'short', day: '2-digit' };
+  const options: Intl.DateTimeFormatOptions = { 
+      year: 'numeric', 
+      month: 'short', 
+      day: '2-digit' 
+  };
   return date.toLocaleDateString('en-US', options);
 };
 
 const HomePage = () => {
   const router = useRouter();
-  const { updateCarbonData, carbonData } = useCarbonFootprint(); // Access the context
+  const { updateCarbonData, carbonData, resetCarbonData } = useCarbonFootprint(); // Access the context
+  const totalFootprint = calculateCarbonFootprint(carbonData);
 
   const handleCalculate = () => {
-      // Example: Save the last calculated carbon footprint to the context
-      updateCarbonData('lastCalculatedFootprint', 7.5); // Save the value
+       resetCarbonData?.(); 
+      updateCarbonData('lastCalculatedFootprint', totalFootprint); // Save the value
       updateCarbonData('lastCalculatedDate', getCurrentDate()); // Save the date
-      router.push('/'); // Navigate to the next page
+      router.push('/');
+      // Navigate to the next page
   };
   const getBadgeText = () => {
     const footprint = carbonData.lastCalculatedFootprint || 0; // Default to 0 if undefined
@@ -56,11 +64,11 @@ const HomePage = () => {
           </Badge>
 
           <Text style={styles.webText} size="lg">
-            Your last calculated carbon footprint
+            Your calculated carbon footprint
           </Text>
 
           <Heading size="5xl" style={styles.webHeading}>
-            {carbonData.lastCalculatedFootprint || 'N/A'}
+            {(totalFootprint/1000).toFixed(2)}
           </Heading>
 
           <Text size="md" style={styles.webSubText}>
@@ -71,41 +79,16 @@ const HomePage = () => {
             Last Calculated On: {carbonData.lastCalculatedDate || 'N/A'}
           </Text>
 
-          {/* Progress Bars */}
-          <View style={styles.webProgressContainer}>
-            <View style={styles.webProgressRow}>
-              <Text size="sm" style={styles.webProgressLabel}>
-                Avg. India
-              </Text>
-              <Progress value={80} size="sm" style={styles.webProgressBar}>
-                <ProgressFilledTrack style={styles.webProgressFilledIndia} />
-              </Progress>
-              <Text size="sm" style={styles.webProgressValue}>
-                13.50 tons
-              </Text>
-            </View>
-
-            <View style={styles.webProgressRow}>
-              <Text size="sm" style={styles.webProgressLabel}>
-                Avg. World
-              </Text>
-              <Progress value={30} size="sm" style={styles.webProgressBar}>
-                <ProgressFilledTrack style={styles.webProgressFilledWorld} />
-              </Progress>
-              <Text size="sm" style={styles.webProgressValue}>
-                4.50 tons
-              </Text>
-            </View>
-          </View>
+         
 
           {/* Calculate Button */}
-          <Button style={styles.webButton}>
-            <TouchableOpacity onPress={handleCalculate}>
+         
+            <TouchableOpacity style={styles.webButton} onPress={handleCalculate}>
               <Text size="lg" style={styles.webButtonText}>
                 Calculate
               </Text>
             </TouchableOpacity>
-          </Button>
+        
         </View>
       </LinearGradient>
     );
@@ -205,44 +188,15 @@ const styles = StyleSheet.create({
     color: '#79879d',
     marginBottom: 30,
   },
-  webProgressContainer: {
-    width: '40%',
-    marginBottom: 30,
-    backgroundColor: 'ffffff',
-    borderRadius: 10,
-  },
-  webProgressRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  webProgressLabel: {
-    flex: 1,
-    color: '#6f7d95',
-  },
-  webProgressBar: {
-    flex: 3,
-    marginHorizontal: 10,
-  },
-  webProgressFilledIndia: {
-    backgroundColor: '#62ffcb',
-  },
-  webProgressFilledWorld: {
-    backgroundColor: "#6267ff", 
-  },
-  webProgressValue: {
-    flex: 1,
-    textAlign: 'right',
-    color: '#6f7d95',
-  },
+
+
   webButton: {
-    backgroundColor: '#9dfc03',
-    paddingVertical: 15,
-    paddingHorizontal: 200,
-    marginBottom: 20,
-    borderRadius: 35,
+    width: 200,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#a4e22b',
   },
   webButtonText: {
     color: '#000000',

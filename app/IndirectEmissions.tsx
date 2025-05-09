@@ -25,13 +25,24 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
 
 const { width } = Dimensions.get('window');
 
-const DirectEmissions2Screen = () => {
+const busiElectricityConsumption = () => {
     const router = useRouter(); // Initialize the router
-    const [Quantity , setQuantity]  = useState('');
+    const { updateCarbonData } = useCarbonFootprint(); // Access the context
+    const [Quantity, setQuantity] = useState(''); // State for electricity quantity
     const [metric, setMetric] = useState(''); // State for the selected metric
+
+    const handleContinue = () => {
+        // Save electricity consumption to the context
+        updateCarbonData('enterpriseElectricityCOnsumption', parseFloat(Quantity) || 0);
+        updateCarbonData('buElMetric', metric); // Save the selected metric
+
+        // Navigate to the next screen
+        router.push('/IndirectEmissions2');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -58,7 +69,7 @@ const DirectEmissions2Screen = () => {
                                             onChangeText={setQuantity}
                                         />
                     <Select
-                     value={metric} // Bind the selected value to the `metric` state
+                     selectedValue={metric} // Bind the selected value to the `metric` state
                      onValueChange={(value) => setMetric(value)}>
       <SelectTrigger variant="rounded" size="md" style={styles.selectBox}>
         <SelectInput placeholder="Select option" />
@@ -88,7 +99,7 @@ const DirectEmissions2Screen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/IndirectEmissions2', params: {Quantity, Metric: metric,} })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -173,7 +184,7 @@ const styles = StyleSheet.create({
     },
     input: {
         width: '40%',
-        height: 50,
+        height: 40,
         borderRadius: 25,
         borderWidth: 1,
         borderColor: '#ddd',
@@ -198,4 +209,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DirectEmissions2Screen;
+export default busiElectricityConsumption;

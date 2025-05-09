@@ -12,9 +12,11 @@ import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/ra
 import { CircleIcon } from '@/components/ui/icon';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
 
 const empTransport = () => {
     const router = useRouter();
+    const { updateCarbonData } = useCarbonFootprint(); 
     const [selectedOption, setSelectedOption] = useState('');
 
     const options = [
@@ -25,6 +27,13 @@ const empTransport = () => {
         { label: 'Walking', value: 'Walking' },
         { label: 'Electric Vehicles', value: 'Electric Vehicles' },
     ];
+    const handleContinue = () => {
+        // Save the selected transport option to the context
+        updateCarbonData('primaryComumute', selectedOption); // Save employee transport option
+
+        // Navigate to the next screen
+        router.push('/othersEmp');
+    }
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -86,9 +95,8 @@ const empTransport = () => {
 
                     <TouchableOpacity
                         style={styles.continueButton}
-                        onPress={() =>
-                            router.push({ pathname: '/others7', params: { empTransport : selectedOption } })
-                        } // Navigate with selected option
+                        onPress={handleContinue} 
+                       
                     >
                         <UiText size="lg" bold style={styles.continueButtonText}>
                             Continue

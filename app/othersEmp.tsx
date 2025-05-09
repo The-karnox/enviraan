@@ -12,22 +12,20 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
-import { useCarbonFootprint } from './CarbonFootprintContext';
+import { useCarbonFootprint } from './CarbonFootprintContext'; 
 
 const { width } = Dimensions.get('window');
 
-const others = () => {
+const ElectricityConsumptionScreen = () => {
     const router = useRouter(); // Initialize the router
-    const { updateCarbonData } = useCarbonFootprint(); // Access the context
-    const [quantity, setQuantity] = useState(''); // State for percentage value
-
+    const { updateCarbonData } = useCarbonFootprint(); 
+    const [nEmployees, setnEmployees] = useState('');
     const handleContinue = () => {
-        // Save the percentage value to the context
-        updateCarbonData('recycledWaste', parseFloat(quantity) || 0);
+        updateCarbonData('numOfEmployees', parseFloat(nEmployees) || 0);
 
         // Navigate to the next screen
-        router.push('/others8');
-    };
+        router.push('/others7');
+    }
 
 
     return (
@@ -37,36 +35,29 @@ const others = () => {
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
-                    <Progress value={50} size="xs"    style={styles.progressBar}>
+                    <Progress value={52} size="xs"    style={styles.progressBar}>
                         <ProgressFilledTrack className="bg-[#a4e22b]"/>
                     </Progress>
                 </View>
 
                 <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                    What percentage of waste is recycled, reused, or diverted from landfill?
+                        What is the total number of employees?
                     </UiText>
-                <View >
 
-                    
-
-{/* Slider Component */}
-                                     <TextInput
-                                            style={styles.input}
-                                            placeholder="%"
-                                            placeholderTextColor="#999"
-                                            keyboardType="numeric"
-                                            value={quantity}
-                                            onChangeText={setQuantity}
-                                        />
-  
-</View>
-                   
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Employees"
+                        placeholderTextColor="#999"
+                        keyboardType="numeric"
+                        value={nEmployees}
+                        onChangeText={setnEmployees}
+                    />
 
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={styles.skipButton}
-                            onPress={() => router.push('/Indirectemissions3')}
+                            onPress={() => router.push('/others6')}
                         >
                             <UiText size="lg" style={styles.skipButtonText}>
                                 Skip
@@ -129,8 +120,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     input: {
-        width: '100%',
-        height: 40,
+        width: '40%',
+        height: 50,
         borderRadius: 25,
         borderWidth: 1,
         borderColor: '#ddd',
@@ -138,19 +129,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         backgroundColor: 'white',
         marginVertical: 20,
-    },
-    selectBox: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        backgroundColor: '#f6ffec',
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#d4e8c2',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        marginBottom: 10,
-        width: '110%',
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -185,4 +163,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default others;
+export default ElectricityConsumptionScreen;

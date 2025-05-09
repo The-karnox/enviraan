@@ -12,12 +12,20 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext'; 
 
 const { width } = Dimensions.get('window');
 
 const ElectricityConsumptionScreen = () => {
     const router = useRouter(); // Initialize the router
+    const { updateCarbonData } = useCarbonFootprint(); 
     const [distance, setDist] = useState('');
+    const handleContinue = () => {
+        updateCarbonData('distanceTravelledByEmployees', parseFloat(distance) || 0);
+
+        // Navigate to the next screen
+        router.push('/others6');
+    }
 
 
     return (
@@ -58,7 +66,7 @@ const ElectricityConsumptionScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/others6', params: { distance } })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue

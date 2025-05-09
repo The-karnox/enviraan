@@ -26,27 +26,37 @@ import { Text as UiText } from '@/components/ui/text';
 import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
 import { CircleIcon } from '@/components/ui/icon';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
 
 const UseOfGenerators = () => {
     const router = useRouter();
-    const [selectedOption, setSelectedOption] = useState('');
-    const [quantity, setQuantity] = useState('');
-    const [fuelTypes] = useState(['Diesel', 'Petrol', 'CNG', 'LPG', 'Coal', 'Charcoal']);
-    const [type, setType] = useState(''); 
+    const { updateCarbonData } = useCarbonFootprint(); // Access the context
+    const [selectedOption, setSelectedOption] = useState(''); // Yes/No for generator usage
+    const [quantity, setQuantity] = useState(''); // Generator fuel quantity
+    const [type, setType] = useState(''); // Generator fuel type
 
     const options = [
         { label: 'Yes', value: 'Yes' },
-        { label: 'No', value: 'no' },
+        { label: 'No', value: 'No' },
     ];
-    
+
+    const handleContinue = () => {
+        // Save data to the context
+        updateCarbonData('useOfGenerator', selectedOption === 'Yes'); // Save generator usage as boolean
+        updateCarbonData('generatorFuelType', type); // Save generator fuel type
+        updateCarbonData('GeneratorFuel', parseFloat(quantity) || 0); // Save generator fuel quantity
+
+        // Navigate to the next screen
+        router.push('/DirectEmissions4');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
                 <View style={styles.progressBarContainer}>
-                    <Progress value={42} size="xs"    style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
+                    <Progress value={42} size="xs" style={styles.progressBar}>
+                        <ProgressFilledTrack className="bg-[#a4e22b]" />
                     </Progress>
                 </View>
 
@@ -72,7 +82,13 @@ const UseOfGenerators = () => {
                         >
                             <Radio value={option.value}>
                                 <RadioIndicator>
-                                    <RadioIcon as={CircleIcon} style={[styles.radioIcon, selectedOption === option.value && styles.radioIconSelected]}/>
+                                    <RadioIcon
+                                        as={CircleIcon}
+                                        style={[
+                                            styles.radioIcon,
+                                            selectedOption === option.value && styles.radioIconSelected,
+                                        ]}
+                                    />
                                 </RadioIndicator>
                             </Radio>
                             <UiText size="md" style={styles.radioLabel}>
@@ -81,42 +97,44 @@ const UseOfGenerators = () => {
                         </TouchableOpacity>
                     ))}
                 </RadioGroup>
-                {selectedOption === 'Yes' &&(
+
+                {/* Additional Questions for "Yes" */}
+                {selectedOption === 'Yes' && (
                     <View style={styles.additionalQuestionContainer}>
-                         <UiText size="xl" bold style={styles.questionText}>
-                    Please specify the fuel type and your consumption?
-                </UiText>
-                <Select
-                value={fuelTypes } 
-                onValueChange={(value) => setType(value)}
-                >
-      <SelectTrigger variant="rounded" size="md" style={styles.selectBox}>
-        <SelectInput placeholder="Select option" />
-        <SelectIcon className="mr-3" as={ChevronDownIcon} />
-      </SelectTrigger>
-      <SelectPortal>
-        <SelectBackdrop />
-        <SelectContent>
-          <SelectDragIndicatorWrapper>
-            <SelectDragIndicator />
-          </SelectDragIndicatorWrapper>
-          <SelectItem label="Diesel-in liters" value="diesel-in liters" />
-          <SelectItem label="petrol-in liters" value="petrol-in liters" />
-          <SelectItem label="Coal-in kg" value="coal-in kg" />
-          <SelectItem label="charcoal-in kg" value="charcoal-in kg" />
-         <SelectItem label="LPG-in cubic meters" value="lpg-in cubic meters" />
-          <SelectItem label="CNG-in kg" value="cng-in kg" />
-        </SelectContent>
-      </SelectPortal>
-    </Select>
-                   <TextInput
-                                             style={styles.input}
-                                             placeholder="Quantity"
-                                             placeholderTextColor="#999"
-                                             keyboardType="numeric"
-                                             value={quantity}
-                                             onChangeText={setQuantity}
-                                         />
+                        <UiText size="xl" bold style={styles.questionText}>
+                            Please specify the fuel type and your consumption.
+                        </UiText>
+                        <Select
+                            selectedValue={type}
+                            onValueChange={(value) => setType(value)}
+                        >
+                            <SelectTrigger variant="rounded" size="md" style={styles.selectBox}>
+                                <SelectInput placeholder="Select option" />
+                                <SelectIcon className="mr-3" as={ChevronDownIcon} />
+                            </SelectTrigger>
+                            <SelectPortal>
+                                <SelectBackdrop />
+                                <SelectContent>
+                                    <SelectDragIndicatorWrapper>
+                                        <SelectDragIndicator />
+                                    </SelectDragIndicatorWrapper>
+                                    <SelectItem label="Diesel (liters)" value="Diesel" />
+                                    <SelectItem label="Petrol (liters)" value="Petrol" />
+                                    <SelectItem label="Coal (kg)" value="Coal" />
+                                    <SelectItem label="Charcoal (kg)" value="Charcoal" />
+                                    <SelectItem label="LPG (cubic meters)" value="LPG" />
+                                    <SelectItem label="CNG (kg)" value="CNG" />
+                                </SelectContent>
+                            </SelectPortal>
+                        </Select>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Quantity"
+                            placeholderTextColor="#999"
+                            keyboardType="numeric"
+                            value={quantity}
+                            onChangeText={setQuantity}
+                        />
                     </View>
                 )}
 
@@ -133,15 +151,7 @@ const UseOfGenerators = () => {
 
                     <TouchableOpacity
                         style={styles.continueButton}
-                        onPress={() =>
-                            router.push({ pathname: '/DirectEmissions4',
-                                params: {
-                                    UseOfGenerators: selectedOption, // Pass whether the user uses generators
-                                    FuelType: type, // Pass the selected fuel type
-                                    Quantity: quantity, // Pass the entered quantity
-                                },
-                             })
-                        } 
+                        onPress={handleContinue} // Save data and navigate
                     >
                         <UiText size="lg" bold style={styles.continueButtonText}>
                             Continue
@@ -162,7 +172,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 30,
     },
-    progressBarContainer: {
+     progressBarContainer: {
         width: '40%',
         height: 4,
         backgroundColor: 'transparent',

@@ -12,12 +12,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
 
 const { width } = Dimensions.get('window');
 
 const DirectEmissions4Screen = () => {
     const router = useRouter(); // Initialize the router
-    const [Quantity , setQunatity] = useState('');
+    const [Quantity, setQuantity] = useState(''); // State for fuel quantity
+    const { updateCarbonData } = useCarbonFootprint(); // Access the context
+
+    const handleContinue = () => {
+        // Save the fuel consumed by company-owned vehicles to the context
+        updateCarbonData('fuelUSedByCompanyVehicles', parseFloat(Quantity) || 0);
+
+        // Navigate to the next screen
+        router.push('/DirectEmissions5');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -38,11 +48,11 @@ const DirectEmissions4Screen = () => {
 
                     <TextInput
                         style={styles.input}
-                        placeholder="Quantity"
+                        placeholder="Quantity in litres"
                         placeholderTextColor="#999"
                         keyboardType="numeric"
                         value={Quantity}
-                        onChangeText={setQunatity}
+                        onChangeText={setQuantity}
                     />
 
                     <View style={styles.buttonContainer}>
@@ -57,7 +67,7 @@ const DirectEmissions4Screen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/DirectEmissions5', params: {Quantity} })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue

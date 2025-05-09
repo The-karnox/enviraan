@@ -1,9 +1,13 @@
 import React, { createContext, useContext, useState } from 'react';
 
 // Define the shape of the carbonData object
-interface CarbonData {
+export interface CarbonData {
     fuelAmount: number;
+    fuelUSedByCompanyVehicles: number;
+    petrol:number;
+    Diesel: number;
     Metric: string;
+    ghgMetric: string;
     familyMembers: number;
     coal: number;
     charcoal: number;
@@ -26,8 +30,35 @@ interface CarbonData {
     metroTravel: number;
     flightTravel: number;
     useOfGenerator: boolean;
+    generatorFuelType: string; 
+    TypeOfVehicle: string; 
+    ghgemission:boolean;
+    ghgType: string; 
+    ghgAmount: number;
+    buElMetric:string;
+    enterpriseElectricityCOnsumption: number; 
+    renewableElectricityPercentage:string;
+    generatesRewnewable:boolean;
+    capacityForRenewable:number;
+    tempControl:boolean;
+    consumptionForTempControl:number;
+    recyclePercentage:number;
+    // Added property
     lastCalculatedFootprint: number; // Added property
-    lastCalculatedDate: string; // Added property
+    lastCalculatedDate: string; 
+    tracksCF:boolean;
+    keyTransportation:string;
+    trackEmissionsTransportation:boolean;
+    estimatedEmissionsTransportation:number;
+    distanceTravelledByEmployees:number;
+    primaryComumute:string;
+    numOfEmployees:number;
+    recycledWaste:number;
+    managingWastePolicy:boolean;
+    formalSustainabilityPolicy:boolean;
+    assessmentsCF:boolean;
+    ISOstd:string;
+    cfOffsetProgram:boolean;
 }
 
 // Define the shape of the context
@@ -43,7 +74,11 @@ const CarbonFootprintContext = createContext<CarbonFootprintContextType | null>(
 export const CarbonFootprintProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [carbonData, setCarbonData] = useState<CarbonData>({
         fuelAmount: 0,
+        fuelUSedByCompanyVehicles: 0,
+        petrol: 0,
+        Diesel: 0,
         Metric: '',
+        ghgMetric: '',
         familyMembers: 0,
         coal: 0,
         charcoal: 0,
@@ -66,6 +101,32 @@ export const CarbonFootprintProvider: React.FC<{ children: React.ReactNode }> = 
         flightTravel: 0,
         renewableElectricity: 0,
         useOfGenerator: false,
+        generatorFuelType: '', 
+        TypeOfVehicle: '',
+        ghgemission: false,
+        ghgType: '', 
+        ghgAmount: 0,
+        enterpriseElectricityCOnsumption: 0,
+        buElMetric:'',
+        renewableElectricityPercentage: '', 
+        generatesRewnewable:false,
+        capacityForRenewable:0,
+        tempControl:false,
+        consumptionForTempControl:0, 
+        tracksCF:false,
+        keyTransportation:'',
+        trackEmissionsTransportation:false,
+        estimatedEmissionsTransportation:0,
+        distanceTravelledByEmployees:0,
+        primaryComumute:'',
+        numOfEmployees:0,
+        recycledWaste:0,
+        managingWastePolicy:false,
+        formalSustainabilityPolicy:false,
+        assessmentsCF:false,
+        ISOstd:'',
+        cfOffsetProgram:false,
+        recyclePercentage:0,
         lastCalculatedFootprint: 0, // Default value
         lastCalculatedDate: '', // Default value
     });
@@ -74,12 +135,16 @@ export const CarbonFootprintProvider: React.FC<{ children: React.ReactNode }> = 
         setCarbonData((prev) => ({ ...prev, [key]: value }));
     };
 
-    const resetCarbonData = () => {
+        const resetCarbonData = () => {
         setCarbonData((prev) => ({
             ...prev,
         
             fuelAmount: 0,
+            fuelUSedByCompanyVehicles: 0,
+            petrol: 0,
+            Diesel: 0,
             Metric: '',
+            ghgMetric: '',
             familyMembers: 0,
             coal: 0,
             charcoal: 0,
@@ -102,6 +167,32 @@ export const CarbonFootprintProvider: React.FC<{ children: React.ReactNode }> = 
             flightTravel: 0,
             renewableElectricity: 0,
             useOfGenerator: false,
+            generatorFuelType: '',
+            TypeOfVehicle: '',
+            ghgemission: false,
+            ghgType: '',
+            ghgAmount: 0,
+            enterpriseElectricityCOnsumption: 0,
+            buElMetric:'',
+            renewableElectricityPercentage: '', 
+            generatesRewnewable:false,
+           capacityForRenewable:0,
+           tempControl:false,
+           tracksCF:false,
+        keyTransportation:'',
+        trackEmissionsTransportation:false,
+        estimatedEmissionsTransportation:0,
+        distanceTravelledByEmployees:0,
+        primaryComumute:'',
+        numOfEmployees:0,
+        recycledWaste:0,
+        managingWastePolicy:false,
+        formalSustainabilityPolicy:false,
+        assessmentsCF:false,
+        ISOstd:'',
+        cfOffsetProgram:false,
+        recyclePercentage:0,
+           consumptionForTempControl:0,
             lastCalculatedFootprint: prev.lastCalculatedFootprint,
         lastCalculatedDate: prev.lastCalculatedDate,
         }));

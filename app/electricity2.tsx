@@ -12,12 +12,32 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
+
 
 const { width } = Dimensions.get('window');
 
-const ElectricityConsumptionScreen = () => {
+const ElectricityConsumptionScreen2 = () => {
     const router = useRouter(); // Initialize the router
-    const [kwh, setKwh] = useState('');
+    const [renewablePercentage, setRenewablePercentage] = useState('');
+    const { updateCarbonData } = useCarbonFootprint(); 
+    const handleContinue = () => {
+        if (
+            !renewablePercentage ||
+            isNaN(parseFloat(renewablePercentage)) ||
+            parseFloat(renewablePercentage) < 0 ||
+            parseFloat(renewablePercentage) > 100
+        ) {
+            alert('Please enter a valid percentage between 0 and 100.');
+            return;
+        }
+    
+        // Save the renewable energy percentage to the context
+        updateCarbonData('renewableElectricity', parseFloat(renewablePercentage));
+    
+        // Navigate to the next page
+        router.push('/fuel');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -41,8 +61,8 @@ const ElectricityConsumptionScreen = () => {
                         placeholder="in %"
                         placeholderTextColor="#999"
                         keyboardType="numeric"
-                        value={kwh}
-                        onChangeText={setKwh}
+                        value={renewablePercentage}
+                        onChangeText={setRenewablePercentage}
                     />
 
                     <View style={styles.buttonContainer}>
@@ -57,7 +77,7 @@ const ElectricityConsumptionScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/fuel', params: { kwh } })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -154,4 +174,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ElectricityConsumptionScreen;
+export default ElectricityConsumptionScreen2;

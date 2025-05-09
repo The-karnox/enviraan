@@ -69,7 +69,7 @@ const others12 = () => {
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={styles.skipButton}
-                        onPress={() => router.push('/avoided')} // Navigate without saving
+                        onPress={() => router.push('/AvoidedEmissions')} // Navigate without saving
                     >
                         <UiText size="lg" style={styles.skipButtonText}>
                             Skip
@@ -79,7 +79,7 @@ const others12 = () => {
                     <TouchableOpacity
                         style={styles.continueButton}
                         onPress={() =>
-                            router.push({ pathname: '/avoided',
+                            router.push({ pathname: '/AvoidedEmissions',
                                 params: {
                                     others12: selectedOption
                                 },

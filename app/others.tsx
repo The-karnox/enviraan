@@ -1,23 +1,34 @@
 import React, { useState } from 'react';
 import {
     View,
+    TextInput,
     TouchableOpacity,
     StyleSheet,
     SafeAreaView,
     StatusBar,
     Dimensions,
 } from 'react-native';
-  import { Slider,SliderThumb, SliderTrack, SliderFilledTrack } from '@/components/ui/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
 
 const { width } = Dimensions.get('window');
 
 const others = () => {
     const router = useRouter(); // Initialize the router
-    const [sliderValue, setSliderValue] = useState(0);
+    const { updateCarbonData } = useCarbonFootprint(); // Access the context
+    const [quantity, setQuantity] = useState(''); // State for percentage value
+
+    const handleContinue = () => {
+        // Save the percentage value to the context
+        updateCarbonData('recyclePercentage', parseFloat(quantity) || 0);
+
+        // Navigate to the next screen
+        router.push('/others2');
+    };
+
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -26,44 +37,36 @@ const others = () => {
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
-                    <Progress value={8} size="xs"    style={styles.progressBar}>
+                    <Progress value={50} size="xs"    style={styles.progressBar}>
                         <ProgressFilledTrack className="bg-[#a4e22b]"/>
                     </Progress>
                 </View>
 
                 <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                    What percentage of raw materials consists of recycled content?
+                    What percentage of your raw materials consists of recycled content?
                     </UiText>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '40%' }}>
+                <View >
 
-                    <UiText style={{ marginRight: 10, fontSize: 18, fontWeight: "bold" }}>{sliderValue}</UiText>
+                    
 
 {/* Slider Component */}
-<Slider
-  defaultValue={0}
-  minValue={0}
-  maxValue={100}
-  step={1}
-  onChange={(val) => setSliderValue(val)}
-  sliderTrackHeight={10}
-  style={{  flex: 1, marginHorizontal: 10, }}
->
-  <SliderTrack style={{ backgroundColor: "#d3d3d3" }}>
-    <SliderFilledTrack style={{ backgroundColor: "#a4e22b" }} /> {/* Green Track */}
-  </SliderTrack>
-  <SliderThumb style={{ backgroundColor: "#a4e22b", width: 20, height: 20 }} /> {/* Green Thumb */}
-</Slider>
-
-{/* Right Max Value Display */}
-<UiText style={{ marginLeft: 10, fontSize: 18, fontWeight: "bold" }}>100</UiText>
+                                     <TextInput
+                                            style={styles.input}
+                                            placeholder="%"
+                                            placeholderTextColor="#999"
+                                            keyboardType="numeric"
+                                            value={quantity}
+                                            onChangeText={setQuantity}
+                                        />
+  
 </View>
                    
 
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={styles.skipButton}
-                            onPress={() => router.push('/others2')}
+                            onPress={() => router.push('/Indirectemissions3')}
                         >
                             <UiText size="lg" style={styles.skipButtonText}>
                                 Skip
@@ -72,7 +75,7 @@ const others = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/others2', params: {sliderValue} })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -124,6 +127,17 @@ const styles = StyleSheet.create({
         color: '#15181e',
         textAlign: 'center',
         marginBottom: 20,
+    },
+    input: {
+        width: '100%',
+        height: 40,
+        borderRadius: 25,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        paddingHorizontal: 16,
+        fontSize: 16,
+        backgroundColor: 'white',
+        marginVertical: 20,
     },
     selectBox: {
         flexDirection: 'row',

@@ -12,12 +12,26 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
 
 const { width } = Dimensions.get('window');
 
 const ElectricityConsumptionScreen = () => {
     const router = useRouter(); // Initialize the router
+    const { updateCarbonData } = useCarbonFootprint();
     const [kwh, setKwh] = useState('');
+    const handleContinue = () => {
+        if (!kwh || isNaN(parseFloat(kwh)) || parseFloat(kwh) <= 0) {
+            alert('Please enter a valid electricity consumption in kWh.');
+            return;
+        }
+
+        // Save the electricity consumption to the context
+        updateCarbonData('electricityConsumption', parseFloat(kwh));
+        router.push('/electricity2');
+    };
+
+
 
 
     return (
@@ -58,7 +72,7 @@ const ElectricityConsumptionScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/electricity2', params: { kwh } })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue

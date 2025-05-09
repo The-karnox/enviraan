@@ -25,13 +25,30 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
+
+
 
 const { width } = Dimensions.get('window');
 
 const DirectEmissionsScreen = () => {
     const router = useRouter(); // Initialize the router
     const [fuelTypes] = useState(['Diesel', 'Petrol', 'CNG', 'LPG', 'Coal', 'Charcoal']); // Set fuel types to state
+    const { updateCarbonData } = useCarbonFootprint();
     const [selectedFuel, setSelectedFuel] = useState(''); // State for selected fuel
+    const handleContinue = () => {
+        if (!selectedFuel) {
+            alert('Please select a fuel type.');
+            return;
+        }
+
+        // Save the selected fuel type and amount to the context
+        updateCarbonData('fuelType', selectedFuel);
+       
+
+        // Navigate to the next page
+        router.push('/DirectEmissions2');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -40,7 +57,7 @@ const DirectEmissionsScreen = () => {
 
                 {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
-                    <Progress value={14} size="xs"    style={styles.progressBar}>
+                    <Progress value={12.5} size="xs"    style={styles.progressBar}>
                         <ProgressFilledTrack className="bg-[#a4e22b]"/>
                     </Progress>
                 </View>
@@ -82,7 +99,7 @@ const DirectEmissionsScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/DirectEmissions2', params: {selectedFuel} })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue

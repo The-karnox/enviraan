@@ -54,7 +54,7 @@ const ElectricityConsumptionScreen = () => {
                         isReadOnly={false}
                         isInvalid={false}
                         isDisabled={false}
-                        className="w-64">
+                        className="w-64 h-50">
                     <TextareaInput
                             placeholder="Your text goes here..."
                             value={text}
@@ -115,8 +115,8 @@ const styles = StyleSheet.create({
         borderRadius: 2,
     },
     textarea: {
-        width: '190%', // Adjust the width to 90% of the container
-        height: 150, // Increase the height to 150 pixels
+        width: '90%', // Adjust the width to 90% of the container
+        height: 200, // Increase the height to 150 pixels
         borderRadius: 10, // Optional: Adjust the border radius
         borderWidth: 1,
         borderColor: '#ddd',

@@ -32,7 +32,7 @@ const MealPreferenceScreen = () => {
             return;
         }
         updateCarbonData('mealPreference', selectedOption); // Save the selected option to the context
-        router.push('/home'); // Navigate to the next page
+        router.push('/homeIndividual'); // Navigate to the next page
     };
 
     return (
@@ -80,7 +80,7 @@ const MealPreferenceScreen = () => {
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={styles.skipButton}
-                        onPress={() => router.push('/home')} // Navigate without saving
+                        onPress={() => router.push('/homeIndividual')} // Navigate without saving
                     >
                         <UiText size="lg" style={styles.skipButtonText}>
                             Skip

@@ -12,12 +12,27 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
+
 
 const { width } = Dimensions.get('window');
 
-const ElectricityConsumptionScreen = () => {
+const EvCab = () => {
     const router = useRouter(); // Initialize the router
-    const [eTaxiTravel , setEtaxiTravel] = useState('');
+    const [eCabTravel , setEtaxiTravel] = useState('');
+    const { updateCarbonData } = useCarbonFootprint();
+    const handleContinue = () => {
+        if (!eCabTravel || isNaN(parseFloat(eCabTravel)) || parseFloat(eCabTravel) <= 0) {
+            alert('Please enter a valid electric taxi travel distance in kms.');
+            return;
+        }
+    
+        // Save the electric taxi travel distance to the context
+        updateCarbonData('electricCabTravel', parseFloat(eCabTravel));
+    
+        // Navigate to the next page
+        router.push('/travel8');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -41,7 +56,7 @@ const ElectricityConsumptionScreen = () => {
                         placeholder="in kms"
                         placeholderTextColor="#999"
                         keyboardType="numeric"
-                        value={eTaxiTravel}
+                        value={eCabTravel}
                         onChangeText={setEtaxiTravel}
                     />
 
@@ -57,7 +72,7 @@ const ElectricityConsumptionScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/travel8', params: {eTaxiTravel} })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -154,4 +169,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ElectricityConsumptionScreen;
+export default EvCab;

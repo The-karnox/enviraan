@@ -5,6 +5,7 @@ import {
     StyleSheet,
     SafeAreaView,
     StatusBar,
+    ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
@@ -12,9 +13,11 @@ import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/ra
 import { CircleIcon } from '@/components/ui/icon';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
 
 const keyTransport = () => {
     const router = useRouter();
+    const { updateCarbonData } = useCarbonFootprint();
     const [selectedOption, setSelectedOption] = useState('');
 
     const options = [
@@ -23,78 +26,86 @@ const keyTransport = () => {
         { label: 'Air Freight ', value: 'Air freight ' },
         { label: 'Sea Freight ', value: 'sea Freight ' },
         { label: 'Inland Waterways ', value: 'Inland Waterways ' },
-
     ];
+
+    const handleContinue = () => {
+        // Save transportation mode to the context
+        updateCarbonData('keyTransportation', selectedOption);
+
+        // Navigate to the next screen
+        router.push('/others4');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
-                <View style={styles.progressBarContainer}>
-                    <Progress value={24} size="xs"    style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
-                    </Progress>
-                </View>
+                <ScrollView contentContainerStyle={styles.scrollContent}>
+                    <View style={styles.progressBarContainer}>
+                        <Progress value={24} size="xs" style={styles.progressBar}>
+                            <ProgressFilledTrack className="bg-[#a4e22b]" />
+                        </Progress>
+                    </View>
 
+                    {/* Question */}
+                    <UiText size="xl" bold style={styles.questionText}>
+                        What are the key transportation modes used in your supply chain?
+                    </UiText>
 
-                {/* Question */}
-                <UiText size="xl" bold style={styles.questionText}>
-                    What are the key transportation mode used in your supply chain?
-                </UiText>
+                    {/* Radio Options */}
+                    <RadioGroup
+                        value={selectedOption}
+                        onChange={(value) => setSelectedOption(value)}
+                        style={styles.radioGroup}
+                    >
+                        {options.map((option) => (
+                            <TouchableOpacity
+                                key={option.value}
+                                style={[
+                                    styles.radioBox,
+                                    selectedOption === option.value && styles.radioBoxSelected,
+                                ]}
+                                onPress={() => setSelectedOption(option.value)}
+                            >
+                                <Radio value={option.value}>
+                                    <RadioIndicator>
+                                        <RadioIcon
+                                            as={CircleIcon}
+                                            style={[
+                                                styles.radioIcon,
+                                                selectedOption === option.value && styles.radioIconSelected,
+                                            ]}
+                                        />
+                                    </RadioIndicator>
+                                </Radio>
+                                <UiText size="md" style={styles.radioLabel}>
+                                    {option.label}
+                                </UiText>
+                            </TouchableOpacity>
+                        ))}
+                    </RadioGroup>
 
-                {/* Radio Options */}
-                <RadioGroup
-                    value={selectedOption}
-                    onChange={(value) => setSelectedOption(value)}
-                    style={styles.radioGroup}
-                >
-                    {options.map((option) => (
+                    {/* Buttons */}
+                    <View style={styles.buttonContainer}>
                         <TouchableOpacity
-                            key={option.value}
-                            style={[
-                                styles.radioBox,
-                                selectedOption === option.value && styles.radioBoxSelected,
-                            ]}
-                            onPress={() => setSelectedOption(option.value)}
+                            style={styles.skipButton}
+                            onPress={() => router.push('/others4')} // Navigate without saving
                         >
-                            <Radio value={option.value}>
-                                <RadioIndicator>
-                                    <RadioIcon as={CircleIcon}
-                                     style={[
-                                        styles.radioIcon,
-                                        selectedOption === option.value && styles.radioIconSelected,
-                                    ]}/>
-                                </RadioIndicator>
-                            </Radio>
-                            <UiText size="md" style={styles.radioLabel}>
-                                {option.label}
+                            <UiText size="lg" style={styles.skipButtonText}>
+                                Skip
                             </UiText>
                         </TouchableOpacity>
-                    ))}
-                </RadioGroup>
 
-                {/* Buttons */}
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={styles.skipButton}
-                        onPress={() => router.push('/others4')} // Navigate without saving
-                    >
-                        <UiText size="lg" style={styles.skipButtonText}>
-                            Skip
-                        </UiText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.continueButton}
-                        onPress={() =>
-                            router.push({ pathname: '/others4', params: { keyTransport : selectedOption } })
-                        } // Navigate with selected option
-                    >
-                        <UiText size="lg" bold style={styles.continueButtonText}>
-                            Continue
-                        </UiText>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity
+                            style={styles.continueButton}
+                            onPress={handleContinue}
+                        >
+                            <UiText size="lg" bold style={styles.continueButtonText}>
+                                Continue
+                            </UiText>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
             </SafeAreaView>
         </LinearGradient>
     );
@@ -106,8 +117,12 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
+    },
+    scrollContent: {
+        flexGrow: 1,
         paddingHorizontal: 20,
         paddingVertical: 30,
+        alignItems: 'center',
     },
     progressBarContainer: {
         width: '40%',
@@ -118,13 +133,13 @@ const styles = StyleSheet.create({
         paddingBottom: 24,
     },
     progressBar: {
-        width: '40%', // Retain the same size as the original progress bar
+        width: '40%',
         height: 4,
-        backgroundColor: '#e0e0e0', // Background color for the progress bar
+        backgroundColor: '#e0e0e0',
         borderRadius: 2,
     },
     progressFilledTrack: {
-        backgroundColor: '#a4e22b', // Green color for the filled track
+        backgroundColor: '#a4e22b',
         height: '100%',
         borderRadius: 2,
     },
@@ -149,20 +164,20 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 15,
         marginBottom: 10,
-        width: '30%',
+        width: '150%',
     },
     radioBoxSelected: {
-        borderColor: '#86B049', // Highlight selected option
+        borderColor: '#86B049',
     },
     radioLabel: {
         marginLeft: 10,
         color: '#15181e',
     },
     radioIcon: {
-        color: '#d4e8c2', // Default color for the icon
+        color: '#d4e8c2',
     },
     radioIconSelected: {
-        color: '#a4e22b', // Green color for the selected icon
+        color: '#a4e22b',
     },
     buttonContainer: {
         flexDirection: 'row',

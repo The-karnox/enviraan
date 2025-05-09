@@ -54,7 +54,7 @@ const ElectricityConsumptionScreen = () => {
                         isReadOnly={false}
                         isInvalid={false}
                         isDisabled={false}
-                        className="w-64">
+                        className="w-64 h-50">
                     <TextareaInput
                             placeholder="Your text goes here..."
                             value={text}

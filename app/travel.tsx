@@ -12,12 +12,27 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
+
 
 const { width } = Dimensions.get('window');
 
-const ElectricityConsumptionScreen = () => {
+const AirTravelScreen = () => {
     const router = useRouter(); // Initialize the router
     const [AirTravel , setAirTravel] = useState('');
+    const { updateCarbonData } = useCarbonFootprint(); 
+    const handleContinue = () => {
+        if (!AirTravel || isNaN(parseFloat(AirTravel)) || parseFloat(AirTravel) <= 0) {
+            alert('Please enter a valid air travel distance in km.');
+            return;
+        }
+    
+        // Save the air travel distance to the context
+        updateCarbonData('airTravel', parseFloat(AirTravel));
+    
+        // Navigate to the next page
+        router.push('/travel2');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -57,7 +72,7 @@ const ElectricityConsumptionScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/travel2', params: {AirTravel} })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -154,4 +169,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ElectricityConsumptionScreen;
+export default AirTravelScreen;

@@ -12,12 +12,28 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
 
 const { width } = Dimensions.get('window');
 
-const ElectricityConsumptionScreen = () => {
+const fuelCoal = () => {
     const router = useRouter(); // Initialize the router
     const [fuelAmount, setFuelAmount] = useState('');
+    const { updateCarbonData } = useCarbonFootprint(); 
+    const handleContinue = () => {
+        const handleContinue = () => {
+            if (!fuelAmount || isNaN(parseFloat(fuelAmount)) || parseFloat(fuelAmount) <= 0) {
+                alert('Please enter a valid coal consumption in kg.');
+                return;
+            }
+        
+            // Save the coal consumption to the context
+            updateCarbonData('coal', parseFloat(fuelAmount));
+        
+            // Navigate to the next page
+            router.push('/fuel3');
+        };
+    }
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -57,7 +73,7 @@ const ElectricityConsumptionScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/fuel3', params: {fuelAmount} })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -154,4 +170,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ElectricityConsumptionScreen;
+export default fuelCoal;

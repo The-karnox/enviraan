@@ -67,7 +67,7 @@ const Modules = () => {
                                 </Text>
                                 <TouchableOpacity
                                     style={styles.webButton}
-                                    onPress={() => router.push(module.route)}
+                                    onPress={() => router.push({ pathname: module.route as any })}
                                 >
                                     <Text size="lg" style={styles.webButtonText}>
                                         Continue

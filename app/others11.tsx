@@ -12,9 +12,11 @@ import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/ra
 import { CircleIcon } from '@/components/ui/icon';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
+import { useCarbonFootprint } from './CarbonFootprintContext';
 
 const envstd = () => {
     const router = useRouter();
+    const { updateCarbonData } = useCarbonFootprint(); 
     const [selectedOption, setSelectedOption] = useState('');
 
     const options = [
@@ -23,13 +25,20 @@ const envstd = () => {
         { label: 'GHG Protocol', value: 'GHG Protocol' },
         { label: 'other', value: 'other' },
     ];
+    const handleContinue = () => {
+        // Save renewable energy data to the context
+        updateCarbonData('ISOstd', selectedOption); // Save if renewable energy is generated
+
+        // Navigate to the next screen
+        router.push('/others12');
+    }
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
                 <View style={styles.progressBarContainer}>
-                    <Progress value={48} size="xs"    style={styles.progressBar}>
+                    <Progress value={88} size="xs"    style={styles.progressBar}>
                         <ProgressFilledTrack className="bg-[#a4e22b]"/>
                     </Progress>
                 </View>
@@ -84,9 +93,7 @@ const envstd = () => {
 
                     <TouchableOpacity
                         style={styles.continueButton}
-                        onPress={() =>
-                            router.push({ pathname: '/others12', params: { envstd : selectedOption } })
-                        } // Navigate with selected option
+                        onPress={handleContinue} // Navigate with selected option
                     >
                         <UiText size="lg" bold style={styles.continueButtonText}>
                             Continue
