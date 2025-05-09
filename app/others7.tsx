@@ -66,7 +66,7 @@ const others = () => {
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={styles.skipButton}
-                            onPress={() => router.push('/Indirectemissions3')}
+                            onPress={() => router.push('/IndirectEmissions3')}
                         >
                             <UiText size="lg" style={styles.skipButtonText}>
                                 Skip
