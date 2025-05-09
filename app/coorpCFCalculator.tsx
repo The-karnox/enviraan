@@ -3,15 +3,14 @@ import { CarbonData } from './CarbonFootprintContext';
 export const calculateCorporateCarbonFootprint = (carbonData: CarbonData) => {
     const EF = {
         // Emission factors (in metric tonnes CO₂e per unit)
-        fuelType:{
-        petrol: 2.31,
-        diesel: 2.68,
-        cng: 2.75,
-        lpg: 1.51,
-        coal: 2.86,
-        charcoal: 3.1,
+        fuelType: {
+            petrol: 2.31,
+            diesel: 2.68,
+            cng: 2.75,
+            lpg: 1.51,
+            coal: 2.86,
+            charcoal: 3.1,
         },
-      // Assuming zero emissions for EVs
         refrigerants: {
             'R-134a': 1430,
             'R-410A': 2088,
@@ -19,7 +18,7 @@ export const calculateCorporateCarbonFootprint = (carbonData: CarbonData) => {
             'R-404A': 3922,
             'R-32': 675,
             'CO₂': 1,
-            'Other': 2000, // Default value for unknown refrigerants
+            'Other': 2000,
         },
         ghg: {
             CO2: 1,
@@ -38,7 +37,7 @@ export const calculateCorporateCarbonFootprint = (carbonData: CarbonData) => {
             'Air Freight': 0.5,
             'Sea Freight': 0.02,
             'Inland Waterways': 0.03,
-        } as const,
+        },
         employeeCommute: {
             Car: 0.2,
             Carpooling: 0.1,
@@ -47,6 +46,24 @@ export const calculateCorporateCarbonFootprint = (carbonData: CarbonData) => {
             Walking: 0.0,
             'Electric Vehicles': 0.0,
         },
+    };
+
+    // Helper function to normalize metrics
+    const normalizeMetric = (value: number, metric: string): number => {
+        switch (metric) {
+            case 'KWh':
+                return value / 1000; // Convert KWh to MWh
+            case 'MWh':
+                return value; // Already in MWh
+            case 'Metric Tonnes':
+                return value; // Already in metric tonnes
+            case 'Quintals':
+                return value / 10; // Convert quintals to metric tonnes
+            case 'KG':
+                return value / 1000; // Convert kilograms to metric tonnes
+            default:
+                return value; // Default to the same unit
+        }
     };
 
     // 1. Vehicle Emissions
@@ -68,33 +85,35 @@ export const calculateCorporateCarbonFootprint = (carbonData: CarbonData) => {
     // 2. Generator Emissions
     const generatorEmissions = (() => {
         if (!carbonData.useOfGenerator) return 0; // No emissions if generators are not used
-        const ef = EF[carbonData.generatorFuelType.toLowerCase() as keyof typeof EF] || 0;
-        return carbonData.GeneratorFuel * EF.fuelType[carbonData.generatorFuelType as keyof typeof EF.fuelType] || 0;
+        const ef = EF.fuelType[carbonData.generatorFuelType as keyof typeof EF.fuelType] || 0;
+        return carbonData.GeneratorFuel * ef;
     })();
 
     // 3. Refrigerant Emissions
     const refrigerantEmissions = (() => {
         const gwp = EF.refrigerants[carbonData.refrigerantType as keyof typeof EF.refrigerants] || EF.refrigerants['Other'];
-        return carbonData.refrigerantAmount * gwp / 1000; // Convert to metric tonnes
+        return normalizeMetric(carbonData.refrigerantAmount, carbonData.ghgMetric) * gwp;
     })();
 
     // 4. GHG Emissions
     const ghgEmissions = (() => {
         const gwp = EF.ghg[carbonData.ghgType as keyof typeof EF.ghg] || 1; // Default to CO₂ if unknown
-        return carbonData.ghgAmount * gwp;
+        return normalizeMetric(carbonData.ghgAmount, carbonData.ghgMetric) * gwp;
     })();
 
     // 5. Electricity Consumption
-    const electricityEmissions = carbonData.enterpriseElectricityCOnsumption * EF.electricity;
+    const electricityEmissions = normalizeMetric(carbonData.enterpriseElectricityCOnsumption, carbonData.buElMetric) * EF.electricity;
 
     // 6. Renewable Energy Offset
     const renewableEnergyOffset = carbonData.renewableElectricityPercentage
-        ? (carbonData.enterpriseElectricityCOnsumption * (parseFloat(carbonData.renewableElectricityPercentage) / 100)) * EF.renewableEnergy
+        ? normalizeMetric(carbonData.enterpriseElectricityCOnsumption, carbonData.buElMetric) *
+          (parseFloat(carbonData.renewableElectricityPercentage) / 100) *
+          EF.renewableEnergy
         : 0;
 
     // 7. Onsite Renewable Energy Generation
     const onsiteRenewableEmissions = carbonData.generatesRewnewable
-        ? carbonData.capacityForRenewable * EF.renewableEnergy
+        ? normalizeMetric(carbonData.capacityForRenewable, 'MWh') * EF.renewableEnergy
         : 0;
 
     // 8. Transportation Modes
@@ -110,13 +129,7 @@ export const calculateCorporateCarbonFootprint = (carbonData: CarbonData) => {
     })();
 
     // 10. Waste Management (if applicable)
-    const wasteEmissions = carbonData.recycledWaste * 0.05; // Example: 0.05 metric tonnes CO₂e per tonne of waste
-
-    // 11. Temperature Control (District Heating/Cooling)
-    const tempControlEmissions = (() => {
-        if (!carbonData.tempControl) return 0; // No emissions if district heating/cooling is not used
-        return carbonData.consumptionForTempControl * EF.electricity; // Assuming electricity is used for heating/cooling
-    })();
+    const wasteEmissions = normalizeMetric(carbonData.recycledWaste, 'Metric Tonnes') * 0.05;
 
     // Total Carbon Footprint
     const totalFootprint =
@@ -129,8 +142,7 @@ export const calculateCorporateCarbonFootprint = (carbonData: CarbonData) => {
         onsiteRenewableEmissions +
         transportEmissions +
         employeeCommuteEmissions +
-        wasteEmissions +
-        tempControlEmissions;
+        wasteEmissions;
 
     return totalFootprint;
 };
