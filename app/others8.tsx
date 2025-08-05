@@ -6,6 +6,7 @@ import {
     StyleSheet,
     SafeAreaView,
     StatusBar,
+    useWindowDimensions,
 } from 'react-native';
   import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,29 +14,82 @@ import { Text as UiText } from '@/components/ui/text';
 import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
 import { CircleIcon } from '@/components/ui/icon';
 import { useRouter } from 'expo-router';
-
+import { useCarbonFootprint } from './CarbonFootprintContext';
+import LottieView from 'lottie-react-native';
+import shiping from '../assets/animations/cold chain logistics.json';
 const others8 = () => {
     const router = useRouter();
+    const { updateCarbonData } = useCarbonFootprint(); // Use the context
     const [selectedOption, setSelectedOption] = useState('');
+    const [recyclePercentage, setRecyclePercentage] = useState('');
     const options = [
         { label: 'Yes', value: 'Yes' },
         { label: 'No', value: 'no' },
     ];
-    
+     const handleNumericInput = (text: string) => {
+        // This regex allows numbers and at most one decimal point.
+        if (text === '' || /^\d*\.?\d*$/.test(text)) {
+            setRecyclePercentage(text);
+        }
+    };
+      const { width, height } = useWindowDimensions();
+    const handleContinue = () => {
+        const usesPlastics = selectedOption === 'Yes';
+        if (usesPlastics) {
+            if (!recyclePercentage.trim()) {
+                alert( 'Please enter the percentage of recycled plastics.');
+                return;
+            }
+            const percentage = parseFloat(recyclePercentage);
+            if (isNaN(percentage) || percentage < 0 || percentage > 100) {
+                alert( 'Please enter a percentage between 0 and 100.');
+                return;
+            }
+        }
+
+        updateCarbonData('usesRecycledPlastics', usesPlastics);
+        updateCarbonData('recyclePercentage', usesPlastics ? parseFloat(recyclePercentage) || 0 : 0);
+
+        router.push('/others9');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
-                <View style={styles.progressBarContainer}>
-                    <Progress value={64} size="xs"    style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
-                    </Progress>
-                </View>
-
+                 <View style={styles.progressWrapper}>
+                                <View style={styles.progressBarContainer}>
+                                    <Progress value={75} size="md" style={styles.progressBar}>
+                                        <ProgressFilledTrack className="bg-[#a4e22b]" />
+                                    </Progress>
+                                </View>
+                                 <UiText style={styles.progressText}>14 of 18</UiText>
+                                </View>
+                <View
+                                                                                    style={[
+                                                                                        StyleSheet.absoluteFill,
+                                                                                        { justifyContent: 'center', paddingTop:200  ,alignItems: 'center', opacity: 0.5}
+                                                                                    ]}
+                                                                                    pointerEvents="none"
+                                                                                >
+                                                                                    <LottieView
+                                                                                        source={shiping}
+                                                                                        autoPlay
+                                                                                        loop
+                                                                                        style={{
+                                                                                            width: Math.min(width * 0.8, 400),
+                                                                                            height: Math.min(height * 0.3, 200),
+                                                                                            maxWidth: '100%',
+                                                                                            maxHeight: '100%',
+                                                                                           
+                                                                                        }}
+                                                                                        resizeMode="contain"
+                                                                                    />
+                                                                                </View>
                 {/* Question */}
+                
                 <UiText size="xl" bold style={styles.questionText}>
-                    Do you have a policy for managing waste for sustainability?
+                   Does your company have consumption of recycled plastics (thermoplastic, filler and fiber) used in your products?
                 </UiText>
 
                 {/* Radio Options */}
@@ -65,6 +119,22 @@ const others8 = () => {
                     ))}
                 </RadioGroup>
 
+                 {selectedOption === 'Yes' && (
+                    <View style={styles.additionalQuestionContainer}>
+                        <UiText size="lg" style={styles.questionText}>
+                            Please write the percentage of total recycled plastics content used into your production process?
+                        </UiText>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Percentage (%)"
+                            placeholderTextColor="#999"
+                            keyboardType="numeric"
+                            value={recyclePercentage}
+                            onChangeText={handleNumericInput}
+                        />
+                    </View>
+                )}
+
                 {/* Buttons */}
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
@@ -78,13 +148,7 @@ const others8 = () => {
 
                     <TouchableOpacity
                         style={styles.continueButton}
-                        onPress={() =>
-                            router.push({ pathname: '/others9',
-                                params: {
-                                    others2: selectedOption
-                                },
-                             })
-                        } 
+                        onPress={handleContinue} 
                     >
                         <UiText size="lg" bold style={styles.continueButtonText}>
                             Continue
@@ -105,6 +169,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 30,
     },
+     scrollContent: {
+        flexGrow: 1,
+        paddingHorizontal: 20,
+        paddingBottom: 20,
+        alignItems: 'center',
+    },
      progressBarContainer: {
         width: '40%',
         height: 4,
@@ -119,28 +189,40 @@ const styles = StyleSheet.create({
         backgroundColor: '#e0e0e0', // Background color for the progress bar
         borderRadius: 2,
     },
+     progressText: {
+        fontSize: 12,
+        color: '#000',
+        opacity: 0.5,
+    },
+    progressWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        paddingBottom: 24,
+        gap: 8,
+    },
     questionText: {
         color: '#15181e',
         textAlign: 'center',
         fontWeight: 'bold',
         marginBottom: 20,
     },
-    radioGroup: {
-        marginTop: 20,
-        alignItems: 'center',
+     radioGroup: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 16, // Adds space between the 'Yes' and 'No' boxes
+        marginBottom: 20,
     },
     radioBox: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
         backgroundColor: '#f6ffec',
         borderRadius: 10,
         borderWidth: 1,
         borderColor: '#d4e8c2',
-        paddingHorizontal: 15,
+        paddingHorizontal: 25,
         paddingVertical: 15,
-        marginBottom: 10,
-        width: '30%',
     },
     radioBoxSelected: {
         borderColor: '#86B049', // Highlight selected option

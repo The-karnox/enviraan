@@ -2,7 +2,23 @@ import React, { createContext, useContext, useState } from 'react';
 
 // Define the shape of the carbonData object
 export interface CarbonData {
+    nameOfOrg:string;
+    email:string;
+    activityType: string;
+    Designation: string;
+    revenue: number;
+    reportingPeriod: number; 
+    selectedFuelTypes: string[]; 
+    usedRefrigerants?: boolean;
+    selectedRefrigerants?: string[];
+    refrigerantDetails?: { [refrigerant: string]: { quantity: string; metric: string } };
+    fuelDetails: { [fuel: string]: { quantity: string; metric: string } };
     fuelAmount: number;
+    ghgEmisssion: boolean;
+    GHGtype: string[];
+    GHGdetails: { [ghg: string]: { quantity: string; metric: string } };
+    aquiredEnergy: number;
+    aquiredRenewable: number;
     fuelUSedByCompanyVehicles: number;
     petrol:number;
     Diesel: number;
@@ -35,36 +51,69 @@ export interface CarbonData {
     ghgemission:boolean;
     ghgType: string; 
     ghgAmount: number;
-    buElMetric:string;
-    enterpriseElectricityCOnsumption: number; 
+    enterpriseElectricityCOnsumption: number;
+    fuElMetric:string; 
+    renewableElectricityConsumption: number;
+    renewableMetric: string;
+    acquiredHeat: number;
+    EnergyMetric:string; 
+    renewableHeatConsumption: number;
+    renewableHeatMetric: string;
     renewableElectricityPercentage:string;
+    acquiredSteam: number;
+    steamMetric: string;
+    renewableSteamConsumption: number;
+    renewableSteam:number;
+    renewableSteamMetric: string;
+    acquiredCooling:number;
+    coolingMetric:string;
+    coolingRenewable:number;
+    renewableCoolingMetric:string;
     generatesRewnewable:boolean;
     capacityForRenewable:number;
+    metricForRenewable:string;
     tempControl:boolean;
     consumptionForTempControl:number;
-    recyclePercentage:number;
-    // Added property
-    lastCalculatedFootprint: number; // Added property
+    lastCalculatedFootprint: number; 
     lastCalculatedDate: string; 
     tracksCF:boolean;
-    keyTransportation:string;
+    keyTransportation:string[];
     trackEmissionsTransportation:boolean;
     estimatedEmissionsTransportation:number;
-    distanceTravelledByEmployees:number;
-    primaryComumute:string;
+    businessTravel: {
+        flights: number;
+        trains: number;
+        cars: number;
+        cruiseShips: number;
+    };
+    primaryComumute:string[];
+    commuteDetails: { [key: string]: { employees: string; distance: string } };
     numOfEmployees:number;
     recycledWaste:number;
+    usesRecycledPlastics: boolean; // Add this field
+    recyclePercentage: number; // Add this field
     managingWastePolicy:boolean;
-    formalSustainabilityPolicy:boolean;
+    formalSustainabilityPolicy:false;
     assessmentsCF:boolean;
     ISOstd:string;
     cfOffsetProgram:boolean;
+    hasCertificate: boolean;
+    certificateName: string;
+    procurementMechanism: string;
+    serialId: string;
+    generatorId: string;
+    generatorName: string;
+    generatorLocation: string;
+    generationDate: string;
+    issuanceDate: string;
+    needsHelpToCalculate: boolean;
+    supplyChainHelpText: string; // Add this field
 }
 
 // Define the shape of the context
 interface CarbonFootprintContextType {
     carbonData: CarbonData;
-    updateCarbonData: (key: keyof CarbonData, value: number | string | boolean) => void;
+    updateCarbonData: (key: keyof CarbonData, value: any) => void;
     resetCarbonData?: () => void; // Optional reset function
 }
 
@@ -73,6 +122,22 @@ const CarbonFootprintContext = createContext<CarbonFootprintContextType | null>(
 
 export const CarbonFootprintProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [carbonData, setCarbonData] = useState<CarbonData>({
+        nameOfOrg: '',
+        email: '',
+        activityType: '',
+        Designation: '',
+        revenue: 0,
+        selectedFuelTypes: [], 
+        fuelDetails: {},
+        usedRefrigerants: false, 
+        selectedRefrigerants: [], 
+        refrigerantDetails: {}, 
+        ghgEmisssion: false,
+        GHGtype: [],
+        GHGdetails: {},
+        aquiredEnergy: 0,
+        aquiredRenewable: 0,
+        reportingPeriod: 0, // Optional, can be removed if not needed
         fuelAmount: 0,
         fuelUSedByCompanyVehicles: 0,
         petrol: 0,
@@ -107,38 +172,87 @@ export const CarbonFootprintProvider: React.FC<{ children: React.ReactNode }> = 
         ghgType: '', 
         ghgAmount: 0,
         enterpriseElectricityCOnsumption: 0,
-        buElMetric:'',
+        fuElMetric:'',
+        renewableElectricityConsumption: 0,
+        renewableMetric: '',
+        acquiredHeat: 0,
+        EnergyMetric: '',
+        renewableHeatConsumption: 0,
+        renewableHeatMetric: '',
+        renewableSteamConsumption: 0,
+        renewableSteam:0,
+        renewableSteamMetric: '',
+        acquiredSteam: 0,
+        steamMetric: '',
+         acquiredCooling: 0,
+    coolingMetric: '',
+    coolingRenewable: 0,
+    renewableCoolingMetric: '',
         renewableElectricityPercentage: '', 
         generatesRewnewable:false,
         capacityForRenewable:0,
+        metricForRenewable:'',
         tempControl:false,
         consumptionForTempControl:0, 
         tracksCF:false,
-        keyTransportation:'',
+        keyTransportation:[],
         trackEmissionsTransportation:false,
         estimatedEmissionsTransportation:0,
-        distanceTravelledByEmployees:0,
-        primaryComumute:'',
+        businessTravel: {
+            flights: 0,
+            trains: 0,
+            cars: 0,
+            cruiseShips: 0,
+        },
+        primaryComumute:[],
+        commuteDetails: {},
         numOfEmployees:0,
         recycledWaste:0,
+        usesRecycledPlastics: false, // Add this field
+        recyclePercentage: 0, // Add this field
         managingWastePolicy:false,
         formalSustainabilityPolicy:false,
         assessmentsCF:false,
         ISOstd:'',
         cfOffsetProgram:false,
-        recyclePercentage:0,
+        hasCertificate: false,
+        certificateName: '',
+        procurementMechanism: '',
+        serialId: '',
+        generatorId: '',
+        generatorName: '',
+        generatorLocation: '',
+        generationDate: '',
+        issuanceDate: '',
+        needsHelpToCalculate: false,
+        supplyChainHelpText: '', // Add this field
         lastCalculatedFootprint: 0, // Default value
         lastCalculatedDate: '', // Default value
     });
 
-    const updateCarbonData = (key: keyof CarbonData, value: number | string | boolean) => {
+    const updateCarbonData = (key: keyof CarbonData, value: any) => {
         setCarbonData((prev) => ({ ...prev, [key]: value }));
     };
 
         const resetCarbonData = () => {
         setCarbonData((prev) => ({
             ...prev,
-        
+            nameOfOrg: '',  //have to be removed 
+            email: '',       //have to be removed 
+            activityType: '',     //have to be removed 
+            Designation: '',  //have to be removed
+            revenue: 0,
+            reportingPeriod: 0, //have to be removed
+            selectedFuelTypes: [], 
+            fuelDetails: {},
+            usedRefrigerants: false,
+            selectedRefrigerants: [],
+            refrigerantDetails: {},
+            ghgEmisssion: false,
+            GHGtype: [],
+            GHGdetails: {},
+            aquiredEnergy: 0,
+            aquiredRenewable: 0,
             fuelAmount: 0,
             fuelUSedByCompanyVehicles: 0,
             petrol: 0,
@@ -173,26 +287,60 @@ export const CarbonFootprintProvider: React.FC<{ children: React.ReactNode }> = 
             ghgType: '',
             ghgAmount: 0,
             enterpriseElectricityCOnsumption: 0,
-            buElMetric:'',
+            fuElMetric:'',
+            renewableElectricityConsumption: 0,
+            renewableMetric: '',
             renewableElectricityPercentage: '', 
+              acquiredHeat: 0,
+              EnergyMetric: '',
+                renewableHeatConsumption: 0,
+                renewableHeatMetric: '',
+            renewableSteamConsumption: 0,
+            renewableSteam:0,
+            renewableSteamMetric: '',
+            acquiredSteam: 0,
+            steamMetric: '', 
+             acquiredCooling: 0,
+    coolingMetric: '',
+    coolingRenewable: 0,
+    renewableCoolingMetric: '',
             generatesRewnewable:false,
            capacityForRenewable:0,
+           metricForRenewable:'',
            tempControl:false,
            tracksCF:false,
-        keyTransportation:'',
+        keyTransportation:[],
         trackEmissionsTransportation:false,
         estimatedEmissionsTransportation:0,
-        distanceTravelledByEmployees:0,
-        primaryComumute:'',
+        businessTravel: {
+            flights: 0,
+            trains: 0,
+            cars: 0,
+            cruiseShips: 0,
+        },
+        primaryComumute:[], // Changed from '' to []
+        commuteDetails: {},
         numOfEmployees:0,
         recycledWaste:0,
+        usesRecycledPlastics: false, // Add this field
+        recyclePercentage: 0, // Add this field
         managingWastePolicy:false,
         formalSustainabilityPolicy:false,
         assessmentsCF:false,
         ISOstd:'',
         cfOffsetProgram:false,
-        recyclePercentage:0,
+        hasCertificate: false,
+        certificateName: '',
+        procurementMechanism: '',
+        serialId: '',
+        generatorId: '',
+        generatorName: '',
+        generatorLocation: '',
+        generationDate: '',
+        issuanceDate: '',
            consumptionForTempControl:0,
+           needsHelpToCalculate: false,
+           supplyChainHelpText: '', // Add this field
             lastCalculatedFootprint: prev.lastCalculatedFootprint,
         lastCalculatedDate: prev.lastCalculatedDate,
         }));

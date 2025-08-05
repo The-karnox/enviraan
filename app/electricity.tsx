@@ -20,6 +20,14 @@ const ElectricityConsumptionScreen = () => {
     const router = useRouter(); // Initialize the router
     const { updateCarbonData } = useCarbonFootprint();
     const [kwh, setKwh] = useState('');
+
+    const handleNumericInput = (text: string) => {
+        // This regex allows numbers and at most one decimal point.
+        if (/^\d*\.?\d*$/.test(text)) {
+            setKwh(text);
+        }
+    };
+
     const handleContinue = () => {
         if (!kwh || isNaN(parseFloat(kwh)) || parseFloat(kwh) <= 0) {
             alert('Please enter a valid electricity consumption in kWh.');
@@ -57,7 +65,7 @@ const ElectricityConsumptionScreen = () => {
                         placeholderTextColor="#999"
                         keyboardType="numeric"
                         value={kwh}
-                        onChangeText={setKwh}
+                        onChangeText={handleNumericInput}
                     />
 
                     <View style={styles.buttonContainer}>

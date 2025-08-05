@@ -6,58 +6,77 @@ import {
     SafeAreaView,
     StatusBar,
     ScrollView,
+    Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
 import { CircleIcon } from '@/components/ui/icon';
-import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
 import { useCarbonFootprint } from './CarbonFootprintContext';
+import LottieView from 'lottie-react-native';
+import WindyAnimation from '../assets/animations/Weather-windy.json';
 
-const DirectEmissions5 = () => {
+const numOfEmplyee = () => {
     const router = useRouter();
     const { updateCarbonData } = useCarbonFootprint();
-    const [selectedOption, setSelectedOption] = useState('');
+    const [selectedOption, setSelectedOption] = useState<string>('');
 
     const options = [
-        { label: 'Petrol Vehicles', value: 'Petrol Vehicles' },
-        { label: 'Diesel Vehicles', value: 'Diesel Vehicles' },
-        { label: 'CNG Vehicles', value: 'CNG Vehicles' },
-        { label: 'Electric Vehicles', value: 'Electric Vehicles' },
-        { label: 'Hybrid Vehicles', value: 'Hybrid Vehicles' },
-        { label: 'Two-Wheelers', value: 'Two-Wheelers' },
-        { label: 'Heavy-Duty Trucks', value: 'Heavy-Duty Trucks' },
+        { label: '1 - 100', value: 50 },
+        { label: '101 - 500', value: 300 },
+        { label: '501 - 1000', value: 800 },
+        { label: '1001 - 5000', value: 3000 },
+        { label: '5001 - 10000', value: 8000 },
+        { label: '10000+', value: 10000 },
+       
     ];
 
     const handleContinue = () => {
-        // Save the selected vehicle type to the context
-        updateCarbonData('TypeOfVehicle', selectedOption);
-
+        if (!selectedOption) {
+            Alert.alert('Selection Required', 'Please select the number of employees before continuing.');
+            return;
+        }
+        updateCarbonData('numOfEmployees', Number(selectedOption));
         // Navigate to the next screen
-        router.push('/DirectEmissions6');
+        router.push('/revenue');
     };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
+                {/* Background Lottie Animation */}
+                <View
+                    style={[
+                        StyleSheet.absoluteFill,
+                        { justifyContent: 'center', alignItems: 'center' }
+                    ]}
+                    pointerEvents="none"
+                >
+                    <LottieView
+                        source={WindyAnimation}
+                        autoPlay
+                        loop
+                        style={{
+                            width: 400,
+                            height: 200,
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                            opacity: 0.2
+                        }}
+                        resizeMode="contain"
+                    />
+                </View>
                 <ScrollView contentContainerStyle={styles.scrollContent}>
-                    <View style={styles.progressBarContainer}>
-                        <Progress value={62.5} size="xs" style={styles.progressBar}>
-                            <ProgressFilledTrack className="bg-[#a4e22b]" />
-                        </Progress>
-                    </View>
-
                     {/* Question */}
                     <UiText size="xl" bold style={styles.questionText}>
-                        What type of vehicles are mostly used?
+                       How many employees does your organization have?
                     </UiText>
-
                     {/* Radio Options */}
                     <RadioGroup
                         value={selectedOption}
-                        onChange={(value) => setSelectedOption(value)}
+                        onChange={(value:string) => setSelectedOption(value)}
                         style={styles.radioGroup}
                     >
                         {options.map((option) => (
@@ -65,17 +84,17 @@ const DirectEmissions5 = () => {
                                 key={option.value}
                                 style={[
                                     styles.radioBox,
-                                    selectedOption === option.value && styles.radioBoxSelected,
+                                    selectedOption === String(option.value) && styles.radioBoxSelected,
                                 ]}
-                                onPress={() => setSelectedOption(option.value)}
+                                onPress={() => setSelectedOption(String(option.value))}
                             >
-                                <Radio value={option.value}>
+                                <Radio value={String(option.value)}>
                                     <RadioIndicator>
                                         <RadioIcon
                                             as={CircleIcon}
                                             style={[
                                                 styles.radioIcon,
-                                                selectedOption === option.value && styles.radioIconSelected,
+                                                selectedOption === String(option.value) && styles.radioIconSelected,
                                             ]}
                                         />
                                     </RadioIndicator>
@@ -86,21 +105,12 @@ const DirectEmissions5 = () => {
                             </TouchableOpacity>
                         ))}
                     </RadioGroup>
-
                     {/* Buttons */}
                     <View style={styles.buttonContainer}>
+                        {/* Removed Skip button */}
                         <TouchableOpacity
-                            style={styles.skipButton}
-                            onPress={() => router.push('/DirectEmissions6')} // Navigate without saving
-                        >
-                            <UiText size="lg" style={styles.skipButtonText}>
-                                Skip
-                            </UiText>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.continueButton}
-                            onPress={handleContinue} // Save data and navigate
+                            style={[styles.continueButton, { width: 250 }]}
+                            onPress={handleContinue}
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -213,4 +223,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DirectEmissions5;
+export default numOfEmplyee;

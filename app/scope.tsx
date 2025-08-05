@@ -47,6 +47,7 @@ const Scopes = () => {
                     <Text size="lg" style={styles.webSubtitle}>
                         Go through each scope and address the questionnaire in order to get your carbon footprint.
                     </Text>
+                    <ScrollView>
                     <View style={styles.webGrid}>
                         {scopes.map((scope, index) => (
                             <View key={index} style={styles.webCard}>
@@ -67,6 +68,7 @@ const Scopes = () => {
                             </View>
                         ))}
                     </View>
+                    </ScrollView>
                 </View>
             );
         } else {

@@ -7,6 +7,7 @@ import {
     SafeAreaView,
     StatusBar,
     Dimensions,
+    useWindowDimensions,
 } from 'react-native';
 import {
     Select,
@@ -22,10 +23,14 @@ import {
   } from "@/components/ui/select"
   import { ChevronDownIcon } from "@/components/ui/icon"
 import { LinearGradient } from 'expo-linear-gradient';
+import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
+import { CircleIcon } from '@/components/ui/icon';
 import { Text as UiText } from '@/components/ui/text';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
 import { useCarbonFootprint } from './CarbonFootprintContext';
+import LottieView from 'lottie-react-native';
+import city from '../assets/animations/Wind turbines and solar panels energy.json';
 
 const { width } = Dimensions.get('window');
 
@@ -34,45 +39,141 @@ const busiElectricityConsumption = () => {
     const { updateCarbonData } = useCarbonFootprint(); // Access the context
     const [Quantity, setQuantity] = useState(''); // State for electricity quantity
     const [metric, setMetric] = useState(''); // State for the selected metric
+    const [renewableQuantity, setRenewableQuantity] = useState(''); // New state for renewable energy quantity
+    const [renewableMetric, setRenewableMetric] = useState(''); // New state for renewable metric
+    const [hasElectricity, setHasElectricity] = useState<string>(''); 
+
+    const handleNumericInput = (text: string, setter: (value: string) => void) => {
+        // This regex allows numbers and at most one decimal point.
+        if (text === '' || /^\d*\.?\d*$/.test(text)) {
+            setter(text);
+        }
+    };
 
     const handleContinue = () => {
+        if (hasElectricity === 'Yes') {
+            if (!Quantity.trim()) {
+                alert( 'Please enter the quantity for acquired energy.');
+                return;
+            }
+            if (!metric) {
+                alert( 'Please select a metric for acquired energy.');
+                return;
+            }
+            if (!renewableQuantity.trim()) {
+                alert( 'Please enter the quantity for renewable energy.');
+                return;
+            }
+            if (!renewableMetric) {
+                alert( 'Please select a metric for renewable energy.');
+                return;
+            }
+        }
+
         // Save electricity consumption to the context
-        updateCarbonData('enterpriseElectricityCOnsumption', parseFloat(Quantity) || 0);
-        updateCarbonData('buElMetric', metric); // Save the selected metric
+        updateCarbonData('enterpriseElectricityCOnsumption', hasElectricity === 'Yes' ? parseFloat(Quantity) : 0);
+        updateCarbonData('fuElMetric', hasElectricity === 'Yes' ? metric : '');
+        updateCarbonData('renewableElectricityConsumption', hasElectricity === 'Yes' ? parseFloat(renewableQuantity) : 0);
+        updateCarbonData('renewableMetric', hasElectricity === 'Yes' ? renewableMetric : '');
 
         // Navigate to the next screen
         router.push('/IndirectEmissions2');
     };
+     const { width, height } = useWindowDimensions();
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
+                <View style={styles.progressWrapper}>
+                                                <View style={styles.progressBarContainer}>
+                                                    <Progress value={20} size="md" style={styles.progressBar}>
+                                                        <ProgressFilledTrack className="bg-[#a4e22b]" />
+                                                    </Progress>
+                                                </View>
+                                                 <UiText style={styles.progressText}>4 of 18</UiText>
+                                                </View>
+                 <View
+                    style={[
+                        StyleSheet.absoluteFill,
+                        { justifyContent: 'center', paddingTop:200  ,alignItems: 'center', opacity: 0.5}
+                    ]}
+                    pointerEvents="none"
+                >
+                    <LottieView
+                        source={city}
+                        autoPlay
+                        loop
+                        style={{
+                            width: Math.min(width * 0.8, 400),
+                            height: Math.min(height * 0.3, 200),
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                           
+                        }}
+                        resizeMode="contain"
+                    />
+                </View>
 
                 {/* Progress Bar */}
-                <View style={styles.progressBarContainer}>
-                    <Progress value={25} size="xs"    style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
-                    </Progress>
-                </View>
+                
 
                 <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                    What is your total electricity consumption for the reporting year?
+                    Does your company has Consumption of purchased or acquired electricity?
                     </UiText>
-                       <TextInput
-                                            style={styles.input}
-                                            placeholder="Quantity"
-                                            placeholderTextColor="#999"
-                                            keyboardType="numeric"
-                                            value={Quantity}
-                                            onChangeText={setQuantity}
-                                        />
-                    <Select
-                     selectedValue={metric} // Bind the selected value to the `metric` state
-                     onValueChange={(value) => setMetric(value)}>
+ <RadioGroup
+  value={hasElectricity}
+  onChange={setHasElectricity}
+  style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 16 }}
+>
+  {['Yes', 'No'].map((option) => (
+    <TouchableOpacity
+      key={option}
+      style={[
+        styles.radioBox,
+        hasElectricity === option && styles.radioBoxSelected,
+      ]}
+      onPress={() => setHasElectricity(option)}
+    >
+      <Radio value={option}>
+        <RadioIndicator>
+          <RadioIcon
+            as={CircleIcon}
+            style={[
+              styles.radioIcon,
+              hasElectricity === option && styles.radioIconSelected,
+            ]}
+          />
+        </RadioIndicator>
+      </Radio>
+      <UiText size="md" style={styles.radioLabel}>
+        {option}
+      </UiText>
+    </TouchableOpacity>
+  ))}
+</RadioGroup>
+
+{hasElectricity === 'Yes' && (
+  <>
+  <UiText size="2xl" style={{ marginTop: 10, color: '#15181e' }}>
+     Please enter the amount of aquired energy.
+    </UiText>
+    <TextInput
+      style={styles.input}
+      placeholder="Quantity"
+      placeholderTextColor="#999"
+      keyboardType="numeric"
+      value={Quantity}
+      onChangeText={(text) => handleNumericInput(text, setQuantity)}
+    />
+    <Select
+      selectedValue={metric}
+      onValueChange={(value) => setMetric(value)}
+    >
+      
       <SelectTrigger variant="rounded" size="md" style={styles.selectBox}>
-        <SelectInput placeholder="Select option" />
+        <SelectInput placeholder="metric" />
         <SelectIcon className="mr-3" as={ChevronDownIcon} />
       </SelectTrigger>
       <SelectPortal>
@@ -86,28 +187,63 @@ const busiElectricityConsumption = () => {
         </SelectContent>
       </SelectPortal>
     </Select>
+    <UiText size="2xl" style={{ marginTop: 10, color: '#15181e' }}>
+     Please write the amount electrical energy from renewable sources.
+    </UiText>
+    <TextInput
+      style={styles.input}
+      placeholder="Quantity"
+      placeholderTextColor="#999"
+      keyboardType="numeric"
+      value={renewableQuantity}
+      onChangeText={(text) => handleNumericInput(text, setRenewableQuantity)}
+      onSubmitEditing={handleContinue}
+    />
+    <Select
+      selectedValue={renewableMetric}
+      onValueChange={(value) => setRenewableMetric(value)}
+    >
+      <SelectTrigger variant="rounded" size="md" style={styles.selectBox}>
+        <SelectInput placeholder="metric" />
+        <SelectIcon className="mr-3" as={ChevronDownIcon} />
+      </SelectTrigger>
+      <SelectPortal>
+        <SelectBackdrop />
+        <SelectContent>
+          <SelectDragIndicatorWrapper>
+            <SelectDragIndicator />
+          </SelectDragIndicatorWrapper>
+          <SelectItem label="KWh" value="KWh" />
+          <SelectItem label="MWh" value="MWh" />
+        </SelectContent>
+      </SelectPortal>
+    </Select>
+  
+  </>
+)}
 
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity
-                            style={styles.skipButton}
-                            onPress={() => router.push('/IndirectEmissions2')}
-                        >
-                            <UiText size="lg" style={styles.skipButtonText}>
-                                Skip
-                            </UiText>
-                        </TouchableOpacity>
+<View style={styles.buttonContainer}>
+  <TouchableOpacity
+    style={styles.skipButton}
+    onPress={() => router.push('/IndirectEmissions2')}
+  >
+    <UiText size="lg" style={styles.skipButtonText}>
+      Skip
+    </UiText>
+  </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={styles.continueButton}
-                            onPress={handleContinue} 
-                        >
-                            <UiText size="lg" bold style={styles.continueButtonText}>
-                                Continue
-                            </UiText>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </SafeAreaView>
+  <TouchableOpacity
+    style={styles.continueButton}
+    onPress={handleContinue}
+  >
+    <UiText size="lg" bold style={styles.continueButtonText}>
+      Continue
+    </UiText>
+  </TouchableOpacity>
+
+</View>        
+</View>
+    </SafeAreaView>
         </LinearGradient>
     );
 };
@@ -128,6 +264,19 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         paddingBottom: 24,
     },
+     progressText: {
+        fontSize: 12,
+        color: '#000',
+        opacity: 0.5,
+    },
+     progressWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        paddingBottom: 24,
+        gap: 8,
+    },
     progressBar: {
         width: '40%', // Retain the same size as the original progress bar
         height: 4,
@@ -145,12 +294,42 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     questionText: {
-        maxWidth: '40%',
+        maxWidth: '80%',
         fontWeight: 'bold',
         fontSize: 24,
         color: '#15181e',
         textAlign: 'center',
         marginBottom: 20,
+    },
+     radioGroup: {
+        marginTop: 20,
+        alignItems: 'center',
+    },
+    radioBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        backgroundColor: '#f6ffec',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#d4e8c2',
+        paddingHorizontal: 15,
+        paddingVertical: 15,
+        marginBottom: 10,
+        width: '50%',
+    },
+    radioBoxSelected: {
+        borderColor: '#86B049', // Highlight selected option
+    },
+    radioLabel: {
+        marginLeft: 10,
+        color: '#15181e',
+    },
+    radioIcon: {
+        color: '#d4e8c2', // Default color for the icon
+    },
+    radioIconSelected: {
+        color: '#a4e22b', // Green color for the selected icon
     },
     selectBox: {
         flexDirection: 'row',

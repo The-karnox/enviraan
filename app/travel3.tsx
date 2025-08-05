@@ -7,6 +7,7 @@ import {
     SafeAreaView,
     StatusBar,
     Dimensions,
+    Alert, // Import Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
@@ -19,19 +20,27 @@ const { width } = Dimensions.get('window');
 
 const BusTravelScreen = () => {
     const router = useRouter(); // Initialize the router
-    const [BusTravel , SetBusTravel] = useState('');
+    const [busTravel, setBusTravel] = useState(''); // Corrected state naming
     const { updateCarbonData } = useCarbonFootprint();
+
+    const handleNumericInput = (text: string) => {
+        // This regex allows numbers and at most one decimal point.
+        if (/^\d*\.?\d*$/.test(text)) {
+            setBusTravel(text);
+        }
+    };
+
     const handleContinue = () => {
-        if (!BusTravel || isNaN(parseFloat(BusTravel)) || parseFloat(BusTravel) <= 0) {
-            alert('Please enter a valid bus travel distance in km.');
+        if (!busTravel.trim() || isNaN(parseFloat(busTravel)) || parseFloat(busTravel) <= 0) {
+            Alert.alert('Invalid Input', 'Please enter a valid bus travel distance in km.');
             return;
         }
             
-            // Save the bus travel distance to the context
-            updateCarbonData('busTravel', parseFloat(BusTravel));
-    
-            // Navigate to the next page
-            router.push('/travel4');
+        // Save the bus travel distance to the context
+        updateCarbonData('busTravel', parseFloat(busTravel));
+
+        // Navigate to the next page
+        router.push('/travel4');
     }
 
     return (
@@ -56,8 +65,8 @@ const BusTravelScreen = () => {
                         placeholder="in kms"
                         placeholderTextColor="#999"
                         keyboardType="numeric"
-                        value={BusTravel}
-                        onChangeText={SetBusTravel}
+                        value={busTravel}
+                        onChangeText={handleNumericInput}
                     />
 
                     <View style={styles.buttonContainer}>

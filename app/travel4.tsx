@@ -7,6 +7,7 @@ import {
     SafeAreaView,
     StatusBar,
     Dimensions,
+    Alert, // Import Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
@@ -19,16 +20,24 @@ const { width } = Dimensions.get('window');
 
 const MetroTravelScreen = () => {
     const router = useRouter(); // Initialize the router
-    const [MetroTravel , SetMetroTravel] = useState('');
+    const [metroTravel, setMetroTravel] = useState(''); // Corrected state naming
     const { updateCarbonData } = useCarbonFootprint();
+
+    const handleNumericInput = (text: string) => {
+        // This regex allows numbers and at most one decimal point.
+        if (/^\d*\.?\d*$/.test(text)) {
+            setMetroTravel(text);
+        }
+    };
+
     const handleContinue = () => {
-        if (!MetroTravel || isNaN(parseFloat(MetroTravel)) || parseFloat(MetroTravel) <= 0) {
-            alert('Please enter a valid metro travel distance in kms.');
+        if (!metroTravel.trim() || isNaN(parseFloat(metroTravel)) || parseFloat(metroTravel) <= 0) {
+            Alert.alert('Invalid Input', 'Please enter a valid metro travel distance in kms.');
             return;
         }
 
         // Save the metro travel distance to the context
-        updateCarbonData('metroTravel', parseFloat(MetroTravel));
+        updateCarbonData('metroTravel', parseFloat(metroTravel));
 
         // Navigate to the next page
         router.push('/travel5');
@@ -57,8 +66,8 @@ const MetroTravelScreen = () => {
                         placeholder="in kms"
                         placeholderTextColor="#999"
                         keyboardType="numeric"
-                        value={MetroTravel}
-                        onChangeText={SetMetroTravel}
+                        value={metroTravel}
+                        onChangeText={handleNumericInput}
                     />
 
                     <View style={styles.buttonContainer}>

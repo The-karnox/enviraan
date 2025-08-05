@@ -60,24 +60,14 @@ const busiElectricityConsumption = () => {
                 alert( 'Please select a metric for acquired heat energy.');
                 return;
             }
-            if (!renewableQuantity.trim()) {
-                alert( 'Please enter the quantity for renewable energy.');
-                return;
-            }
-            if (!renewableMetric) {
-                alert( 'Please select a metric for renewable energy.');
-                return;
-            }
         }
 
         // Save electricity consumption to the context
-        updateCarbonData('acquiredCooling', hasElectricity === 'Yes' ? parseFloat(Quantity) : 0);
-        updateCarbonData('coolingMetric', hasElectricity === 'Yes' ? metric : '');
-        updateCarbonData('coolingRenewable', hasElectricity === 'Yes' ? parseFloat(renewableQuantity) : 0);
-        updateCarbonData('renewableCoolingMetric', hasElectricity === 'Yes' ? renewableMetric : '');
+        updateCarbonData('capacityForRenewable', hasElectricity === 'Yes' ? parseFloat(Quantity) : 0);
+        updateCarbonData('metricForRenewable', hasElectricity === 'Yes' ? metric : '');
 
         // Navigate to the next screen
-        router.push('/IndirectEmissions5');
+        router.push('/IndirectEmissions6');
     };
      const { width, height } = useWindowDimensions();
 
@@ -107,18 +97,18 @@ const busiElectricityConsumption = () => {
                     />
                 </View>
 
-                {/* Progress Bar */}
-<View style={styles.progressWrapper}>
+                <View style={styles.progressWrapper}>
                                 <View style={styles.progressBarContainer}>
-                                    <Progress value={35} size="md" style={styles.progressBar}>
+                                    <Progress value={40} size="md" style={styles.progressBar}>
                                         <ProgressFilledTrack className="bg-[#a4e22b]" />
                                     </Progress>
                                 </View>
-                                 <UiText style={styles.progressText}>7 of 18</UiText>
+                                 <UiText style={styles.progressText}>8 of 18</UiText>
                                 </View>
+
                 <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                  Does your company have consumption of purchased or acquired cooling?
+                  Does your company have consumption of self-generated non-fuel renewable energy?
                     </UiText>
  <RadioGroup
   value={hasElectricity}
@@ -155,7 +145,7 @@ const busiElectricityConsumption = () => {
 {hasElectricity === 'Yes' && (
   <>
   <UiText size="2xl" style={{ marginTop: 10, color: '#15181e' }}>
-     Please write the amount of cooling energy purchased or acquired electricity.
+     Please write the consumption of self-generated non-fuel renewable energy.
     </UiText>
     <TextInput
       style={styles.input}
@@ -185,36 +175,7 @@ const busiElectricityConsumption = () => {
         </SelectContent>
       </SelectPortal>
     </Select>
-    <UiText size="2xl" style={{ marginTop: 10, color: '#15181e' }}>
-     Please write the amount of cooling energy from renewable sources.
-    </UiText>
-    <TextInput
-      style={styles.input}
-      placeholder="Quantity"
-      placeholderTextColor="#999"
-      keyboardType="numeric"
-      value={renewableQuantity}
-      onChangeText={(text) => handleNumericInput(text, setRenewableQuantity)}
-    />
-    <Select
-      selectedValue={renewableMetric}
-      onValueChange={(value) => setRenewableMetric(value)}
-    >
-      <SelectTrigger variant="rounded" size="md" style={styles.selectBox}>
-        <SelectInput placeholder="metric" />
-        <SelectIcon className="mr-3" as={ChevronDownIcon} />
-      </SelectTrigger>
-      <SelectPortal>
-        <SelectBackdrop />
-        <SelectContent>
-          <SelectDragIndicatorWrapper>
-            <SelectDragIndicator />
-          </SelectDragIndicatorWrapper>
-          <SelectItem label="KWh" value="KWh" />
-          <SelectItem label="MWh" value="MWh" />
-        </SelectContent>
-      </SelectPortal>
-    </Select>
+   
   
   </>
 )}
@@ -222,7 +183,7 @@ const busiElectricityConsumption = () => {
 <View style={styles.buttonContainer}>
   <TouchableOpacity
     style={styles.skipButton}
-    onPress={() => router.push('/IndirectEmissions5')}
+    onPress={() => router.push('/IndirectEmissions6')}
   >
     <UiText size="lg" style={styles.skipButtonText}>
       Skip

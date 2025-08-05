@@ -7,75 +7,76 @@ import {
     SafeAreaView,
     StatusBar,
     Dimensions,
+    Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
-import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
 import { useCarbonFootprint } from './CarbonFootprintContext';
+import LottieView from 'lottie-react-native';
+import WindyAnimation from '../assets/animations/Weather-windy.json';
 
 const { width } = Dimensions.get('window');
 
-const others = () => {
-    const router = useRouter(); // Initialize the router
-    const { updateCarbonData } = useCarbonFootprint(); // Access the context
-    const [quantity, setQuantity] = useState(''); // State for percentage value
+const OrgName = () => {
+    const router = useRouter();
+    const [designation, setDesignation] = useState(''); // State for organization name
+    const { updateCarbonData } = useCarbonFootprint();
 
     const handleContinue = () => {
-        // Save the percentage value to the context
-        updateCarbonData('recycledWaste', parseFloat(quantity) || 0);
-
+        if (!designation.trim()) {
+            Alert.alert('Input Required', 'Please enter your Designation before continuing.');
+            return;
+        }
+        // Save the organization name to the context
+        updateCarbonData('Designation', designation);
         // Navigate to the next screen
-        router.push('/others8');
+        router.push('/email');
     };
-
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
-
-                {/* Progress Bar */}
-                <View style={styles.progressBarContainer}>
-                    <Progress value={56} size="xs"    style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
-                    </Progress>
+                {/* Background Lottie Animation */}
+                <View
+                    style={[
+                        StyleSheet.absoluteFill,
+                        { justifyContent: 'center', alignItems: 'center' }
+                    ]}
+                    pointerEvents="none"
+                >
+                    <LottieView
+                        source={WindyAnimation}
+                        autoPlay
+                        loop
+                        style={{
+                            width: 400,
+                            height: 200,
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                            opacity: 0.2
+                        }}
+                        resizeMode="contain"
+                    />
                 </View>
-
                 <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                    What percentage of waste is recycled, reused, or diverted from landfill?
+                      Please enter your Designation
                     </UiText>
-                <View >
-
-                    
-
-{/* Slider Component */}
-                                     <TextInput
-                                            style={styles.input}
-                                            placeholder="%"
-                                            placeholderTextColor="#999"
-                                            keyboardType="numeric"
-                                            value={quantity}
-                                            onChangeText={setQuantity}
-                                        />
-  
-</View>
-                   
-
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Designation"
+                        placeholderTextColor="#999"
+                        value={designation}
+                        onChangeText={setDesignation}
+                        onSubmitEditing={handleContinue} 
+                    />
                     <View style={styles.buttonContainer}>
+                        {/* Removed Skip button */}
                         <TouchableOpacity
-                            style={styles.skipButton}
-                            onPress={() => router.push('/IndirectEmissions3')}
-                        >
-                            <UiText size="lg" style={styles.skipButtonText}>
-                                Skip
-                            </UiText>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.continueButton}
-                            onPress={handleContinue} 
+                            style={[styles.continueButton,]}
+                            onPress={handleContinue}
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -129,8 +130,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     input: {
-        width: '100%',
-        height: 40,
+        width: '40%',
+        height: 50,
         borderRadius: 25,
         borderWidth: 1,
         borderColor: '#ddd',
@@ -138,19 +139,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         backgroundColor: 'white',
         marginVertical: 20,
-    },
-    selectBox: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        backgroundColor: '#f6ffec',
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#d4e8c2',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        marginBottom: 10,
-        width: '110%',
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -173,7 +161,7 @@ const styles = StyleSheet.create({
         color: '#86B049',
     },
     continueButton: {
-        width: 200,
+        width: 250,
         height: 50,
         borderRadius: 25,
         justifyContent: 'center',
@@ -185,4 +173,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default others;
+export default OrgName;

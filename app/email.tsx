@@ -10,63 +10,85 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
-import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
-import { useCarbonFootprint } from './CarbonFootprintContext'; 
+import { useCarbonFootprint } from './CarbonFootprintContext';
+import LottieView from 'lottie-react-native';
+import WindyAnimation from '../assets/animations/Weather-windy.json';
 
 const { width } = Dimensions.get('window');
 
-const ElectricityConsumptionScreen = () => {
-    const router = useRouter(); // Initialize the router
-    const { updateCarbonData } = useCarbonFootprint(); 
-    const [nEmployees, setnEmployees] = useState('');
+const OrgEmail = () => {
+    const router = useRouter();
+    const [Email, setEmail] = useState(''); // State for organization name
+    const { updateCarbonData } = useCarbonFootprint();
+    
+
+    const validateEmail = (email: string) => {
+        // Simple email regex
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
     const handleContinue = () => {
-        updateCarbonData('numOfEmployees', parseFloat(nEmployees) || 0);
+        if(!validateEmail(Email)) {
+            alert('Please enter a valid email address.');
+            return;
+        }
+        // Save the organization name to the context
+        updateCarbonData('email', Email);
 
         // Navigate to the next screen
-        router.push('/others7');
-    }
-
+        router.push('/employeeNo');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
+                <View
+                    style={[
+                        StyleSheet.absoluteFill,
+                        { justifyContent: 'center', alignItems: 'center' }
+                    ]}
+                    pointerEvents="none"
+                >
+                    <LottieView
+                        source={WindyAnimation}
+                        autoPlay
+                        loop
+                        style={{
+                            width: 400,
+                            height: 200,
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                            opacity: 0.2
+                        }}
+                        resizeMode="contain"
+                    />
+                </View>
 
                 {/* Progress Bar */}
-                <View style={styles.progressBarContainer}>
-                    <Progress value={52} size="xs"    style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
-                    </Progress>
-                </View>
+               
 
                 <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                        What is the total number of employees?
+                      Please enter your email address
                     </UiText>
 
                     <TextInput
                         style={styles.input}
-                        placeholder="Employees"
+                        placeholder="email"
                         placeholderTextColor="#999"
-                        keyboardType="numeric"
-                        value={nEmployees}
-                        onChangeText={setnEmployees}
+                        value={Email}
+                        onChangeText={setEmail}
+                        onSubmitEditing={handleContinue}
                     />
 
                     <View style={styles.buttonContainer}>
-                        <TouchableOpacity
-                            style={styles.skipButton}
-                            onPress={() => router.push('/others6')}
-                        >
-                            <UiText size="lg" style={styles.skipButtonText}>
-                                Skip
-                            </UiText>
-                        </TouchableOpacity>
+                       
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={handleContinue} 
+                            onPress={handleContinue}
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -151,7 +173,7 @@ const styles = StyleSheet.create({
         color: '#86B049',
     },
     continueButton: {
-        width: 200,
+        width: 250,
         height: 50,
         borderRadius: 25,
         justifyContent: 'center',
@@ -163,4 +185,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ElectricityConsumptionScreen;
+export default OrgEmail;

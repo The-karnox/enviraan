@@ -7,6 +7,7 @@ import {
     SafeAreaView,
     StatusBar,
     Dimensions,
+    Alert, // Import Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
@@ -20,9 +21,17 @@ const fuelCharcoal = () => {
     const router = useRouter(); // Initialize the router
     const [fuelAmount, setFuelAmount] = useState('');
     const { updateCarbonData } = useCarbonFootprint(); 
+
+    const handleNumericInput = (text: string) => {
+        // This regex allows numbers and at most one decimal point.
+        if (/^\d*\.?\d*$/.test(text)) {
+            setFuelAmount(text);
+        }
+    };
+
     const handleContinue = () => {
-        if (!fuelAmount || isNaN(parseFloat(fuelAmount)) || parseFloat(fuelAmount) <= 0) {
-            alert('Please enter a valid charcoal consumption in kg.');
+        if (!fuelAmount.trim() || isNaN(parseFloat(fuelAmount)) || parseFloat(fuelAmount) <= 0) {
+            Alert.alert('Invalid Input', 'Please enter a valid charcoal consumption in kg.');
             return;
         }
     
@@ -31,8 +40,7 @@ const fuelCharcoal = () => {
     
         // Navigate to the next page
         router.push('/travel');
-    
-    }
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -57,7 +65,7 @@ const fuelCharcoal = () => {
                         placeholderTextColor="#999"
                         keyboardType="numeric"
                         value={fuelAmount}
-                        onChangeText={setFuelAmount}
+                        onChangeText={handleNumericInput}
                     />
 
                     <View style={styles.buttonContainer}>

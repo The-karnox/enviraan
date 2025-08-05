@@ -1,118 +1,247 @@
 import React, { useState } from 'react';
 import {
     View,
-    TouchableOpacity,
     TextInput,
+    TouchableOpacity,
     StyleSheet,
     SafeAreaView,
     StatusBar,
+    Dimensions,
+    useWindowDimensions,
 } from 'react-native';
-  import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
+import {
+    Select,
+    SelectTrigger,
+    SelectInput,
+    SelectIcon,
+    SelectPortal,
+    SelectBackdrop,
+    SelectContent,
+    SelectDragIndicator,
+    SelectDragIndicatorWrapper,
+    SelectItem,
+  } from "@/components/ui/select"
+  import { ChevronDownIcon } from "@/components/ui/icon"
 import { LinearGradient } from 'expo-linear-gradient';
-import { Text as UiText } from '@/components/ui/text';
 import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
 import { CircleIcon } from '@/components/ui/icon';
+import { Text as UiText } from '@/components/ui/text';
+import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
-import { useCarbonFootprint } from './CarbonFootprintContext'; 
+import { useCarbonFootprint } from './CarbonFootprintContext';
+import LottieView from 'lottie-react-native';
+import city from '../assets/animations/Wind turbines and solar panels energy.json';
 
-const regen = () => {
-    const router = useRouter();
-    const { updateCarbonData } = useCarbonFootprint(); 
-    const [selectedOption, setSelectedOption] = useState('');
-    const [quantity, setQuantity] = useState('');
+const { width } = Dimensions.get('window');
 
-    const options = [
-        { label: 'Yes', value: 'Yes' },
-        { label: 'No', value: 'no' },
-    ];
-    
+const busiElectricityConsumption = () => {
+    const router = useRouter(); // Initialize the router
+    const { updateCarbonData } = useCarbonFootprint(); // Access the context
+    const [Quantity, setQuantity] = useState(''); // State for electricity quantity
+    const [metric, setMetric] = useState(''); // State for the selected metric
+    const [renewableQuantity, setRenewableQuantity] = useState(''); // New state for renewable energy quantity
+    const [renewableMetric, setRenewableMetric] = useState(''); // New state for renewable metric
+    const [hasElectricity, setHasElectricity] = useState<string>(''); 
+
+    const handleNumericInput = (text: string, setter: (value: string) => void) => {
+        // This regex allows numbers and at most one decimal point.
+        if (text === '' || /^\d*\.?\d*$/.test(text)) {
+            setter(text);
+        }
+    };
+
     const handleContinue = () => {
-        // Save renewable energy data to the context
-        updateCarbonData('generatesRewnewable', selectedOption === 'Yes'); // Save if renewable energy is generated
-        updateCarbonData('capacityForRenewable', parseFloat(quantity) || 0); // Save capacity in kWh
+        if (hasElectricity === 'Yes') {
+            if (!Quantity.trim()) {
+                alert( 'Please enter the quantity for acquired heat energy.');
+                return;
+            }
+            if (!metric) {
+                alert( 'Please select a metric for acquired heat energy.');
+                return;
+            }
+            if (!renewableQuantity.trim()) {
+                alert( 'Please enter the quantity for renewable energy.');
+                return;
+            }
+            if (!renewableMetric) {
+                alert( 'Please select a metric for renewable energy.');
+                return;
+            }
+        }
+
+        // Save electricity consumption to the context
+        updateCarbonData('acquiredSteam', hasElectricity === 'Yes' ? parseFloat(Quantity) : 0);
+        updateCarbonData('steamMetric', hasElectricity === 'Yes' ? metric : '');
+        updateCarbonData('renewableSteam', hasElectricity === 'Yes' ? parseFloat(renewableQuantity) : 0);
+        updateCarbonData('renewableSteamMetric', hasElectricity === 'Yes' ? renewableMetric : '');
 
         // Navigate to the next screen
         router.push('/IndirectEmissions4');
     };
+     const { width, height } = useWindowDimensions();
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
-                <View style={styles.progressBarContainer}>
-                    <Progress value={75} size="xs"    style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
-                    </Progress>
-                </View>
-
-                {/* Question */}
-                <UiText size="xl" bold style={styles.questionText}>
-                    Do you generate any renewable energy onsite?
-                </UiText>
-
-                {/* Radio Options */}
-                <RadioGroup
-                    value={selectedOption}
-                    onChange={(value) => setSelectedOption(value)}
-                    style={styles.radioGroup}
+                 <View
+                    style={[
+                        StyleSheet.absoluteFill,
+                        { justifyContent: 'center', paddingTop:200  ,alignItems: 'center', opacity: 0.5}
+                    ]}
+                    pointerEvents="none"
                 >
-                    {options.map((option) => (
-                        <TouchableOpacity
-                            key={option.value}
-                            style={[
-                                styles.radioBox,
-                                selectedOption === option.value && styles.radioBoxSelected,
-                            ]}
-                            onPress={() => setSelectedOption(option.value)}
-                        >
-                            <Radio value={option.value}>
-                                <RadioIndicator>
-                                    <RadioIcon as={CircleIcon} style={[styles.radioIcon, selectedOption === option.value && styles.radioIconSelected]}/>
-                                </RadioIndicator>
-                            </Radio>
-                            <UiText size="md" style={styles.radioLabel}>
-                                {option.label}
-                            </UiText>
-                        </TouchableOpacity>
-                    ))}
-                </RadioGroup>
-                {selectedOption === 'Yes' &&(
-                    <View style={styles.additionalQuestionContainer}>
-                         <UiText size="xl" bold style={styles.questionText}>
-                    Please specify the capacity?
-                </UiText>
-                   <TextInput
-                                             style={styles.input}
-                                             placeholder="in KWh"
-                                             placeholderTextColor="#999"
-                                             keyboardType="numeric"
-                                             value={quantity}
-                                             onChangeText={setQuantity}
-                                         />
-                    </View>
-                )}
-
-                {/* Buttons */}
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={styles.skipButton}
-                        onPress={() => router.push('/IndirectEmissions4')} // Navigate without saving
-                    >
-                        <UiText size="lg" style={styles.skipButtonText}>
-                            Skip
-                        </UiText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.continueButton}
-                        onPress={handleContinue} 
-                    >
-                        <UiText size="lg" bold style={styles.continueButtonText}>
-                            Continue
-                        </UiText>
-                    </TouchableOpacity>
+                    <LottieView
+                        source={city}
+                        autoPlay
+                        loop
+                        style={{
+                            width: Math.min(width * 0.8, 400),
+                            height: Math.min(height * 0.3, 200),
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                           
+                        }}
+                        resizeMode="contain"
+                    />
                 </View>
-            </SafeAreaView>
+
+                <View style={styles.progressWrapper}>
+                                <View style={styles.progressBarContainer}>
+                                    <Progress value={30} size="md" style={styles.progressBar}>
+                                        <ProgressFilledTrack className="bg-[#a4e22b]" />
+                                    </Progress>
+                                </View>
+                                 <UiText style={styles.progressText}>6 of 18</UiText>
+                                </View>
+
+                <View style={styles.contentContainer}>
+                    <UiText size="xl" bold style={styles.questionText}>
+                    Does your company have consumption of purchased or acquired steam?
+                    </UiText>
+ <RadioGroup
+  value={hasElectricity}
+  onChange={setHasElectricity}
+  style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 16 }}
+>
+  {['Yes', 'No'].map((option) => (
+    <TouchableOpacity
+      key={option}
+      style={[
+        styles.radioBox,
+        hasElectricity === option && styles.radioBoxSelected,
+      ]}
+      onPress={() => setHasElectricity(option)}
+    >
+      <Radio value={option}>
+        <RadioIndicator>
+          <RadioIcon
+            as={CircleIcon}
+            style={[
+              styles.radioIcon,
+              hasElectricity === option && styles.radioIconSelected,
+            ]}
+          />
+        </RadioIndicator>
+      </Radio>
+      <UiText size="md" style={styles.radioLabel}>
+        {option}
+      </UiText>
+    </TouchableOpacity>
+  ))}
+</RadioGroup>
+
+{hasElectricity === 'Yes' && (
+  <>
+  <UiText size="2xl" style={{ marginTop: 10, color: '#15181e' }}>
+     Please write the amount of steam purchased or acquired electricity.
+    </UiText>
+    <TextInput
+      style={styles.input}
+      placeholder="Quantity"
+      placeholderTextColor="#999"
+      keyboardType="numeric"
+      value={Quantity}
+      onChangeText={(text) => handleNumericInput(text, setQuantity)}
+    />
+    <Select
+      selectedValue={metric}
+      onValueChange={(value) => setMetric(value)}
+    >
+      
+      <SelectTrigger variant="rounded" size="md" style={styles.selectBox}>
+        <SelectInput placeholder="metric" />
+        <SelectIcon className="mr-3" as={ChevronDownIcon} />
+      </SelectTrigger>
+      <SelectPortal>
+        <SelectBackdrop />
+        <SelectContent>
+          <SelectDragIndicatorWrapper>
+            <SelectDragIndicator />
+          </SelectDragIndicatorWrapper>
+          <SelectItem label="KWh" value="KWh" />
+          <SelectItem label="MWh" value="MWh" />
+        </SelectContent>
+      </SelectPortal>
+    </Select>
+    <UiText size="2xl" style={{ marginTop: 10, color: '#15181e' }}>
+     Please write the amount of steam Energy from renewable sources.
+    </UiText>
+    <TextInput
+      style={styles.input}
+      placeholder="Quantity"
+      placeholderTextColor="#999"
+      keyboardType="numeric"
+      value={renewableQuantity}
+      onChangeText={(text) => handleNumericInput(text, setRenewableQuantity)}
+      onSubmitEditing={handleContinue}
+    />
+    <Select
+      selectedValue={renewableMetric}
+      onValueChange={(value) => setRenewableMetric(value)}
+    >
+      <SelectTrigger variant="rounded" size="md" style={styles.selectBox}>
+        <SelectInput placeholder="metric" />
+        <SelectIcon className="mr-3" as={ChevronDownIcon} />
+      </SelectTrigger>
+      <SelectPortal>
+        <SelectBackdrop />
+        <SelectContent>
+          <SelectDragIndicatorWrapper>
+            <SelectDragIndicator />
+          </SelectDragIndicatorWrapper>
+          <SelectItem label="KWh" value="KWh" />
+          <SelectItem label="MWh" value="MWh" />
+        </SelectContent>
+      </SelectPortal>
+    </Select>
+  
+  </>
+)}
+
+<View style={styles.buttonContainer}>
+  <TouchableOpacity
+    style={styles.skipButton}
+    onPress={() => router.push('/IndirectEmissions4')}
+  >
+    <UiText size="lg" style={styles.skipButtonText}>
+      Skip
+    </UiText>
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={styles.continueButton}
+    onPress={handleContinue}
+  >
+    <UiText size="lg" bold style={styles.continueButtonText}>
+      Continue
+    </UiText>
+  </TouchableOpacity>
+
+</View>        
+</View>
+    </SafeAreaView>
         </LinearGradient>
     );
 };
@@ -123,10 +252,9 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        paddingHorizontal: 20,
-        paddingVertical: 30,
+        backgroundColor: 'transparent',
     },
-     progressBarContainer: {
+    progressBarContainer: {
         width: '40%',
         height: 4,
         backgroundColor: 'transparent',
@@ -134,19 +262,44 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         paddingBottom: 24,
     },
+     progressText: {
+        fontSize: 12,
+        color: '#000',
+        opacity: 0.5,
+    },
+    progressWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        paddingBottom: 24,
+        gap: 8,
+    },
     progressBar: {
         width: '40%', // Retain the same size as the original progress bar
         height: 4,
         backgroundColor: '#e0e0e0', // Background color for the progress bar
         borderRadius: 2,
     },
+    progressFilledTrack: {
+        backgroundColor: '#a4e22b', // Green color for the filled track
+        height: '100%',
+        borderRadius: 2,
+    },
+    contentContainer: {
+        paddingHorizontal: 20,
+        marginTop: 30,
+        alignItems: 'center',
+    },
     questionText: {
+        maxWidth: '80%',
+        fontWeight: 'bold',
+        fontSize: 24,
         color: '#15181e',
         textAlign: 'center',
-        fontWeight: 'bold',
         marginBottom: 20,
     },
-    radioGroup: {
+     radioGroup: {
         marginTop: 20,
         alignItems: 'center',
     },
@@ -161,7 +314,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 15,
         marginBottom: 10,
-        width: '30%',
+        width: '50%',
     },
     radioBoxSelected: {
         borderColor: '#86B049', // Highlight selected option
@@ -176,10 +329,6 @@ const styles = StyleSheet.create({
     radioIconSelected: {
         color: '#a4e22b', // Green color for the selected icon
     },
-    additionalQuestionContainer: {
-        marginTop: 20,
-        alignItems: 'center',
-    },
     selectBox: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -191,27 +340,17 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 10,
         marginBottom: 10,
-        width: '110%',
-    },
-    input: {
-        width: '40%',
-        height: 50,
-        borderRadius: 25,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        paddingHorizontal: 16,
-        fontSize: 16,
-        backgroundColor: 'white',
-        marginVertical: 20,
+        width: '102%',
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 20,
+        width: '40%',
+        marginTop: 10,
         gap: 24,
     },
     skipButton: {
-        width: 150,
+        width: 200,
         height: 50,
         borderRadius: 25,
         justifyContent: 'center',
@@ -220,11 +359,22 @@ const styles = StyleSheet.create({
         borderColor: '#86B049',
         backgroundColor: 'transparent',
     },
+    input: {
+        width: '40%',
+        height: 40,
+        borderRadius: 25,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        paddingHorizontal: 16,
+        fontSize: 16,
+        backgroundColor: 'white',
+        marginVertical: 20,
+    },
     skipButtonText: {
         color: '#86B049',
     },
     continueButton: {
-        width: 150,
+        width: 200,
         height: 50,
         borderRadius: 25,
         justifyContent: 'center',
@@ -236,4 +386,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default regen;
+export default busiElectricityConsumption;

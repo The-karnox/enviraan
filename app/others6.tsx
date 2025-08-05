@@ -1,198 +1,205 @@
 import React, { useState } from 'react';
 import {
     View,
+    TextInput,
     TouchableOpacity,
     StyleSheet,
     SafeAreaView,
     StatusBar,
+    ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
-import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
-import { CircleIcon } from '@/components/ui/icon';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
 import { useCarbonFootprint } from './CarbonFootprintContext';
 
-const empTransport = () => {
+const BusinessTravelScreen = () => {
     const router = useRouter();
-    const { updateCarbonData } = useCarbonFootprint(); 
-    const [selectedOption, setSelectedOption] = useState('');
+    const { updateCarbonData } = useCarbonFootprint();
 
-    const options = [
-        { label: 'Personal Car', value: 'Car' },
-        { label: 'Carpooling', value: 'Carpooling' },
-        { label: 'Pubic Transport', value: 'Pubic Transport' },
-        { label: 'Cycling', value: 'Cycling' },
-        { label: 'Walking', value: 'Walking' },
-        { label: 'Electric Vehicles', value: 'Electric Vehicles' },
-    ];
+    const [flightsDist, setFlightsDist] = useState('');
+    const [trainsDist, setTrainsDist] = useState('');
+    const [carsDist, setCarsDist] = useState('');
+    const [cruiseShipsDist, setCruiseShipsDist] = useState('');
+
+    const handleNumericInput = (text: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
+        // This regex allows numbers and at most one decimal point.
+        if (/^\d*\.?\d*$/.test(text)) {
+            setter(text);
+        }
+    };
+
     const handleContinue = () => {
-        // Save the selected transport option to the context
-        updateCarbonData('primaryComumute', selectedOption); // Save employee transport option
-
-        // Navigate to the next screen
-        router.push('/othersEmp');
-    }
+        const businessTravelData = {
+            flights: parseFloat(flightsDist) || 0,
+            trains: parseFloat(trainsDist) || 0,
+            cars: parseFloat(carsDist) || 0,
+            cruiseShips: parseFloat(cruiseShipsDist) || 0,
+        };
+        updateCarbonData('businessTravel', businessTravelData);
+        router.push('/others8');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
-                <View style={styles.progressBarContainer}>
-                    <Progress value={48} size="xs"    style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
-                    </Progress>
-                </View>
+                 <View style={styles.progressWrapper}>
+                                                <View style={styles.progressBarContainer}>
+                                                    <Progress value={70} size="md" style={styles.progressBar}>
+                                                        <ProgressFilledTrack className="bg-[#a4e22b]" />
+                                                    </Progress>
+                                                </View>
+                                                 <UiText style={styles.progressText}>13 of 18</UiText>
+                                                </View>
+                <ScrollView contentContainerStyle={styles.scrollContent}>
 
+                    <UiText size="xl" bold style={styles.questionText}>
+                        What is the total distance (in km) covered by your company’s business travel in the past year?
+                    </UiText>
 
-                {/* Question */}
-                <UiText size="xl" bold style={styles.questionText}>
-                    How do employees primarily commute to work?
-                </UiText>
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="by Flights (km)"
+                            placeholderTextColor="#999"
+                            keyboardType="numeric"
+                            value={flightsDist}
+                            onChangeText={(text) => handleNumericInput(text, setFlightsDist)}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="by Trains (km)"
+                            placeholderTextColor="#999"
+                            keyboardType="numeric"
+                            value={trainsDist}
+                            onChangeText={(text) => handleNumericInput(text, setTrainsDist)}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="by Cars (km)"
+                            placeholderTextColor="#999"
+                            keyboardType="numeric"
+                            value={carsDist}
+                            onChangeText={(text) => handleNumericInput(text, setCarsDist)}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="by Cruise Ships (km)"
+                            placeholderTextColor="#999"
+                            keyboardType="numeric"
+                            value={cruiseShipsDist}
+                            onChangeText={(text) => handleNumericInput(text, setCruiseShipsDist)}
+                        />
+                    </View>
 
-                {/* Radio Options */}
-                <RadioGroup
-                    value={selectedOption}
-                    onChange={(value) => setSelectedOption(value)}
-                    style={styles.radioGroup}
-                >
-                    {options.map((option) => (
+                    <View style={styles.buttonContainer}>
                         <TouchableOpacity
-                            key={option.value}
-                            style={[
-                                styles.radioBox,
-                                selectedOption === option.value && styles.radioBoxSelected,
-                            ]}
-                            onPress={() => setSelectedOption(option.value)}
+                            style={styles.skipButton}
+                            onPress={() => router.push('/others8')}
                         >
-                            <Radio value={option.value}>
-                                <RadioIndicator>
-                                    <RadioIcon as={CircleIcon}
-                                     style={[
-                                        styles.radioIcon,
-                                        selectedOption === option.value && styles.radioIconSelected,
-                                    ]}/>
-                                </RadioIndicator>
-                            </Radio>
-                            <UiText size="md" style={styles.radioLabel}>
-                                {option.label}
+                            <UiText size="lg" style={styles.skipButtonText}>
+                                Skip
                             </UiText>
                         </TouchableOpacity>
-                    ))}
-                </RadioGroup>
 
-                {/* Buttons */}
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={styles.skipButton}
-                        onPress={() => router.push('/others7')} // Navigate without saving
-                    >
-                        <UiText size="lg" style={styles.skipButtonText}>
-                            Skip
-                        </UiText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.continueButton}
-                        onPress={handleContinue} 
-                       
-                    >
-                        <UiText size="lg" bold style={styles.continueButtonText}>
-                            Continue
-                        </UiText>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity
+                            style={styles.continueButton}
+                            onPress={handleContinue}
+                        >
+                            <UiText size="lg" bold style={styles.continueButtonText}>
+                                Continue
+                            </UiText>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
             </SafeAreaView>
         </LinearGradient>
     );
 };
 
 const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-    },
-    container: {
-        flex: 1,
+    background: { flex: 1 },
+    container: { flex: 1 },
+    scrollContent: {
+        flexGrow: 1,
+        alignItems: 'center',
         paddingHorizontal: 20,
-        paddingVertical: 30,
+        paddingBottom: 30,
     },
-    progressBarContainer: {
+      progressBarContainer: {
         width: '40%',
-        height: 4,
         backgroundColor: 'transparent',
         marginTop: 20,
         alignSelf: 'center',
-        paddingBottom: 24,
+        paddingBottom: 10,
     },
     progressBar: {
-        width: '40%', // Retain the same size as the original progress bar
-        height: 4,
-        backgroundColor: '#e0e0e0', // Background color for the progress bar
+        width: '100%',
+        backgroundColor: '#e0e0e0',
         borderRadius: 2,
     },
-    progressFilledTrack: {
-        backgroundColor: '#a4e22b', // Green color for the filled track
-        height: '100%',
-        borderRadius: 2,
+     progressText: {
+        fontSize: 12,
+        color: '#000',
+        opacity: 0.5,
     },
+    progressWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        paddingBottom: 24,
+        gap: 8,
+    },
+
     questionText: {
         color: '#15181e',
         textAlign: 'center',
         fontWeight: 'bold',
         marginBottom: 20,
+        maxWidth: '90%',
     },
-    radioGroup: {
-        marginTop: 20,
+    inputContainer: {
+        width: '90%',
+        maxWidth: 500,
         alignItems: 'center',
     },
-    radioBox: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        backgroundColor: '#f6ffec',
-        borderRadius: 10,
+    input: {
+        width: '100%',
+        height: 50,
+        borderRadius: 25,
         borderWidth: 1,
-        borderColor: '#d4e8c2',
-        paddingHorizontal: 15,
-        paddingVertical: 15,
-        marginBottom: 10,
-        width: '30%',
-    },
-    radioBoxSelected: {
-        borderColor: '#86B049', // Highlight selected option
-    },
-    radioLabel: {
-        marginLeft: 10,
-        color: '#15181e',
-    },
-    radioIcon: {
-        color: '#d4e8c2', // Default color for the icon
-    },
-    radioIconSelected: {
-        color: '#a4e22b', // Green color for the selected icon
+        borderColor: '#ddd',
+        paddingHorizontal: 20,
+        fontSize: 16,
+        backgroundColor: 'white',
+        marginVertical: 10,
+        textAlign: 'center',
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
+        width: '90%',
+        maxWidth: 450,
         marginTop: 20,
         gap: 24,
     },
     skipButton: {
-        width: 150,
+        flex: 1,
         height: 50,
         borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
         borderColor: '#86B049',
-        backgroundColor: 'transparent',
     },
     skipButtonText: {
         color: '#86B049',
     },
     continueButton: {
-        width: 150,
+        flex: 1,
         height: 50,
         borderRadius: 25,
         justifyContent: 'center',
@@ -204,4 +211,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default empTransport;
+export default BusinessTravelScreen;

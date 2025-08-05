@@ -1,72 +1,135 @@
 import React, { useState } from 'react';
 import {
     View,
-    TextInput,
     TouchableOpacity,
     StyleSheet,
     SafeAreaView,
     StatusBar,
-    Dimensions,
+    ScrollView,
+    Alert,
+    useWindowDimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
+import { Checkbox, CheckboxIndicator, CheckboxLabel } from '@/components/ui/checkbox';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
 import { useCarbonFootprint } from './CarbonFootprintContext';
+import LottieView from 'lottie-react-native';
+import shiping from '../assets/animations/cold chain logistics.json';
 
-const { width } = Dimensions.get('window');
+const KeyTransportScreen = () => {
+    const router = useRouter();
+    const { carbonData, updateCarbonData } = useCarbonFootprint();
+    const [selectedOptions, setSelectedOptions] = useState<string[]>(carbonData.keyTransportation || []);
+    const { width, height } = useWindowDimensions();
+    const options = [
+        { label: 'Road (Truck)', value: 'Road (Truck)' },
+        { label: 'Rail', value: 'Rail' },
+        { label: 'Air Freight', value: 'Air Freight' },
+        { label: 'Sea Freight', value: 'Sea Freight' },
+        { label: 'Inland Waterways', value: 'Inland Waterways' },
+    ];
 
-const others = () => {
-    const router = useRouter(); // Initialize the router
-    const { updateCarbonData } = useCarbonFootprint(); // Access the context
-    const [quantity, setQuantity] = useState(''); // State for percentage value
-
-    const handleContinue = () => {
-        // Save the percentage value to the context
-        updateCarbonData('recyclePercentage', parseFloat(quantity) || 0);
-
-        // Navigate to the next screen
-        router.push('/others2');
+    const handleToggleOption = (value: string) => {
+        setSelectedOptions(prev =>
+            prev.includes(value)
+                ? prev.filter(v => v !== value)
+                : [...prev, value]
+        );
     };
 
+    const handleContinue = () => {
+        if (selectedOptions.length === 0) {
+            Alert.alert('Selection Required', 'Please select at least one transportation mode.');
+            return;
+        }
+        updateCarbonData('keyTransportation', selectedOptions);
+        router.push('/others4');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
-
-                {/* Progress Bar */}
-                <View style={styles.progressBarContainer}>
-                    <Progress value={50} size="xs"    style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
-                    </Progress>
-                </View>
-
-                <View style={styles.contentContainer}>
-                    <UiText size="xl" bold style={styles.questionText}>
-                    What percentage of your raw materials consists of recycled content?
-                    </UiText>
-                <View >
-
-                    
-
-{/* Slider Component */}
-                                     <TextInput
-                                            style={styles.input}
-                                            placeholder="%"
-                                            placeholderTextColor="#999"
-                                            keyboardType="numeric"
-                                            value={quantity}
-                                            onChangeText={setQuantity}
-                                        />
-  
-</View>
+                 <View style={styles.progressWrapper}>
+                                <View style={styles.progressBarContainer}>
+                                    <Progress value={33} size="md" style={styles.progressBar}>
+                                        <ProgressFilledTrack className="bg-[#a4e22b]" />
+                                    </Progress>
+                                </View>
+                                 <UiText style={styles.progressText}>10 of 18</UiText>
+                                </View>
+                <View
+                                    style={[
+                                        StyleSheet.absoluteFill,
+                                        { justifyContent: 'center', paddingTop:200  ,alignItems: 'center', opacity: 0.5}
+                                    ]}
+                                    pointerEvents="none"
+                                >
+                                    <LottieView
+                                        source={shiping}
+                                        autoPlay
+                                        loop
+                                        style={{
+                                            width: Math.min(width * 0.8, 400),
+                                            height: Math.min(height * 0.3, 200),
+                                            maxWidth: '100%',
+                                            maxHeight: '100%',
+                                           
+                                        }}
+                                        resizeMode="contain"
+                                    />
+                                </View>
+                <ScrollView contentContainerStyle={styles.scrollContent}>
                    
+                    <UiText size="xl" bold style={styles.questionText}>
+                        What are the key transportation modes used in your supply chain?
+                    </UiText>
+
+                    <View style={styles.checkboxContainer}>
+                        {options.map((option) => (
+                            <TouchableOpacity
+                                key={option.value}
+                                style={[
+                                    styles.checkboxWrapper,
+                                    selectedOptions.includes(option.value) && styles.checkboxWrapperSelected,
+                                ]}
+                                onPress={() => handleToggleOption(option.value)}
+                            >
+                                <Checkbox
+                                    value={option.value}
+                                    isChecked={selectedOptions.includes(option.value)}
+                                    aria-label={option.label}
+                                >
+                                    <CheckboxIndicator
+                                        style={{
+                                            borderColor: '#4CAF50',
+                                            backgroundColor: selectedOptions.includes(option.value) ? '#a4e22b' : '#fff',
+                                            borderWidth: 2,
+                                            width: 22,
+                                            height: 22,
+                                            borderRadius: 4,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        {selectedOptions.includes(option.value) && (
+                                            <UiText style={{ color: '#4CAF50', fontSize: 18, fontWeight: 'bold' }}>✓</UiText>
+                                        )}
+                                    </CheckboxIndicator>
+                                </Checkbox>
+                                <UiText size="md" style={styles.checkboxLabel}>
+                                    {option.label}
+                                </UiText>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
 
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={styles.skipButton}
-                            onPress={() => router.push('/Indirectemissions3')}
+                            onPress={() => router.push('/others4')}
                         >
                             <UiText size="lg" style={styles.skipButtonText}>
                                 Skip
@@ -74,15 +137,19 @@ const others = () => {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={styles.continueButton}
-                            onPress={handleContinue} 
+                            style={[
+                                styles.continueButton,
+                                selectedOptions.length === 0 && { backgroundColor: '#d3e9a7', opacity: 0.6 }
+                            ]}
+                            onPress={handleContinue}
+                            disabled={selectedOptions.length === 0}
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
                             </UiText>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </ScrollView>
             </SafeAreaView>
         </LinearGradient>
     );
@@ -94,86 +161,104 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: 'transparent',
     },
-    progressBarContainer: {
+    scrollContent: {
+        flexGrow: 1,
+        paddingHorizontal: 20,
+        paddingBottom: 20,
+        alignItems: 'center',
+    },
+      progressBarContainer: {
         width: '40%',
-        height: 4,
         backgroundColor: 'transparent',
         marginTop: 20,
         alignSelf: 'center',
-        paddingBottom: 24,
+        paddingBottom: 10,
     },
     progressBar: {
-        width: '40%', // Retain the same size as the original progress bar
-        height: 4,
-        backgroundColor: '#e0e0e0', // Background color for the progress bar
+        width: '100%',
+        backgroundColor: '#e0e0e0',
         borderRadius: 2,
     },
-    progressFilledTrack: {
-        backgroundColor: '#a4e22b', // Green color for the filled track
-        height: '100%',
-        borderRadius: 2,
+     progressText: {
+        fontSize: 12,
+        color: '#000',
+        opacity: 0.5,
     },
-    contentContainer: {
-        paddingHorizontal: 20,
-        marginTop: 30,
+    progressWrapper: {
+        flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        paddingBottom: 24,
+        gap: 8,
     },
     questionText: {
-        maxWidth: '40%',
-        fontWeight: 'bold',
-        fontSize: 24,
         color: '#15181e',
         textAlign: 'center',
         marginBottom: 20,
     },
-    input: {
-        width: '100%',
-        height: 40,
-        borderRadius: 25,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        paddingHorizontal: 16,
-        fontSize: 16,
-        backgroundColor: 'white',
-        marginVertical: 20,
+    checkboxContainer: {
+        width: '90%',
+        maxWidth: 500,
     },
-    selectBox: {
+    checkboxWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
         backgroundColor: '#f6ffec',
         borderRadius: 10,
         borderWidth: 1,
         borderColor: '#d4e8c2',
         paddingHorizontal: 15,
-        paddingVertical: 10,
+        paddingVertical: 15,
         marginBottom: 10,
-        width: '110%',
+        width: '100%',
+    },
+    checkboxWrapperSelected: {
+        borderColor: '#86B049',
+        backgroundColor: '#eff8e7',
+    },
+    checkboxIndicator: {
+        width: 22,
+        height: 22,
+        borderRadius: 4,
+        borderWidth: 2,
+        borderColor: '#86B049',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    checkboxCheckmark: {
+        color: '#86B049',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    checkboxLabel: {
+        marginLeft: 12,
+        color: '#15181e',
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        width: '40%',
-        marginTop: 10,
+        width: '90%',
+        maxWidth: 450,
+        marginTop: 20,
         gap: 24,
     },
     skipButton: {
-        width: 200,
+        flex: 1,
         height: 50,
         borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
         borderColor: '#86B049',
-        backgroundColor: 'transparent',
     },
     skipButtonText: {
         color: '#86B049',
     },
     continueButton: {
-        width: 200,
+        flex: 1,
         height: 50,
         borderRadius: 25,
         justifyContent: 'center',
@@ -185,4 +270,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default others;
+export default KeyTransportScreen;

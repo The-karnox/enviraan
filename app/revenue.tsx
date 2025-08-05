@@ -6,56 +6,78 @@ import {
     SafeAreaView,
     StatusBar,
     ScrollView,
+    Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
 import { Radio, RadioGroup, RadioIndicator, RadioIcon } from '@/components/ui/radio';
 import { CircleIcon } from '@/components/ui/icon';
-import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
 import { useCarbonFootprint } from './CarbonFootprintContext';
+import LottieView from 'lottie-react-native';
+import WindyAnimation from '../assets/animations/Weather-windy.json';
 
-const keyTransport = () => {
+const report = () => {
     const router = useRouter();
     const { updateCarbonData } = useCarbonFootprint();
-    const [selectedOption, setSelectedOption] = useState('');
+    const [selectedOption, setSelectedOption] = useState<string>('');
 
     const options = [
-        { label: 'Road(Truck) ', value: 'Road(Truck) ' },
-        { label: 'Rail ', value: 'Rail ' },
-        { label: 'Air Freight ', value: 'Air freight ' },
-        { label: 'Sea Freight ', value: 'sea Freight ' },
-        { label: 'Inland Waterways ', value: 'Inland Waterways ' },
+        { label: '$ 1  Million or less ', value: 1000000 },
+        { label: '$ 1  Million to $ 2 Million', value: 1800000 },
+        { label: '$ 2 Million to $ 3 Million', value: 2800000 },
+        { label: '$ 3 Million to $ 4 Million', value: 3800000 },
+        { label: '$ 4 Million to $ 5 Million', value: 4800000 },
+        { label: '$ 5 Million or more', value: 5000000 },
+        { label: 'Prefer not to say', value: 0 },
+       
     ];
 
     const handleContinue = () => {
-        // Save transportation mode to the context
-        updateCarbonData('keyTransportation', selectedOption);
-
+        if (!selectedOption) {
+            Alert.alert('Selection Required', 'Please select your organization\'s annual revenue before continuing.');
+            return;
+        }
+        updateCarbonData('revenue', Number(selectedOption));
         // Navigate to the next screen
-        router.push('/others4');
+        router.push('/report');
     };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
+                {/* Background Lottie Animation */}
+                <View
+                    style={[
+                        StyleSheet.absoluteFill,
+                        { justifyContent: 'center', alignItems: 'center' }
+                    ]}
+                    pointerEvents="none"
+                >
+                    <LottieView
+                        source={WindyAnimation}
+                        autoPlay
+                        loop
+                        style={{
+                            width: 400,
+                            height: 200,
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                            opacity: 0.2
+                        }}
+                        resizeMode="contain"
+                    />
+                </View>
                 <ScrollView contentContainerStyle={styles.scrollContent}>
-                    <View style={styles.progressBarContainer}>
-                        <Progress value={24} size="xs" style={styles.progressBar}>
-                            <ProgressFilledTrack className="bg-[#a4e22b]" />
-                        </Progress>
-                    </View>
-
                     {/* Question */}
                     <UiText size="xl" bold style={styles.questionText}>
-                        What are the key transportation modes used in your supply chain?
+                      What is your organization's annual revenue?
                     </UiText>
-
                     {/* Radio Options */}
                     <RadioGroup
                         value={selectedOption}
-                        onChange={(value) => setSelectedOption(value)}
+                        onChange={(value:string) => setSelectedOption(value)}
                         style={styles.radioGroup}
                     >
                         {options.map((option) => (
@@ -63,17 +85,17 @@ const keyTransport = () => {
                                 key={option.value}
                                 style={[
                                     styles.radioBox,
-                                    selectedOption === option.value && styles.radioBoxSelected,
+                                    selectedOption === String(option.value) && styles.radioBoxSelected,
                                 ]}
-                                onPress={() => setSelectedOption(option.value)}
+                                onPress={() => setSelectedOption(String(option.value))}
                             >
-                                <Radio value={option.value}>
+                                <Radio value={String(option.value)}>
                                     <RadioIndicator>
                                         <RadioIcon
                                             as={CircleIcon}
                                             style={[
                                                 styles.radioIcon,
-                                                selectedOption === option.value && styles.radioIconSelected,
+                                                selectedOption === String(option.value) && styles.radioIconSelected,
                                             ]}
                                         />
                                     </RadioIndicator>
@@ -84,20 +106,11 @@ const keyTransport = () => {
                             </TouchableOpacity>
                         ))}
                     </RadioGroup>
-
                     {/* Buttons */}
                     <View style={styles.buttonContainer}>
+                        {/* Removed Skip button */}
                         <TouchableOpacity
-                            style={styles.skipButton}
-                            onPress={() => router.push('/others4')} // Navigate without saving
-                        >
-                            <UiText size="lg" style={styles.skipButtonText}>
-                                Skip
-                            </UiText>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.continueButton}
+                            style={[styles.continueButton, { width: 250 }]}
                             onPress={handleContinue}
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
@@ -211,4 +224,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default keyTransport;
+export default report;

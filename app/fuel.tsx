@@ -21,6 +21,13 @@ const fuelConsumptionScreen = () => {
     const [fuelAmount, setFuelAmount] = useState('');
     const router = useRouter();
 
+    const handleNumericInput = (text: string) => {
+        // This regex allows numbers and at most one decimal point.
+        if (/^\d*\.?\d*$/.test(text)) {
+            setFuelAmount(text);
+        }
+    };
+
     const handleContinue = () => {
         updateCarbonData('fuelAmount', parseFloat(fuelAmount)); // Save the fuel amount
         router.push('/fuel2'); // Navigate to the next page
@@ -49,7 +56,7 @@ const fuelConsumptionScreen = () => {
                         placeholderTextColor="#999"
                         keyboardType="numeric"
                         value={fuelAmount}
-                        onChangeText={setFuelAmount}
+                        onChangeText={handleNumericInput}
                     />
 
                     <View style={styles.buttonContainer}>

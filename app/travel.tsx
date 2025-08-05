@@ -7,6 +7,7 @@ import {
     SafeAreaView,
     StatusBar,
     Dimensions,
+    Alert, // Import Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
@@ -19,16 +20,24 @@ const { width } = Dimensions.get('window');
 
 const AirTravelScreen = () => {
     const router = useRouter(); // Initialize the router
-    const [AirTravel , setAirTravel] = useState('');
-    const { updateCarbonData } = useCarbonFootprint(); 
+    const [airTravel, setAirTravel] = useState(''); // Corrected variable name
+    const { updateCarbonData } = useCarbonFootprint();
+
+    const handleNumericInput = (text: string) => {
+        // This regex allows numbers and at most one decimal point.
+        if (/^\d*\.?\d*$/.test(text)) {
+            setAirTravel(text);
+        }
+    };
+
     const handleContinue = () => {
-        if (!AirTravel || isNaN(parseFloat(AirTravel)) || parseFloat(AirTravel) <= 0) {
-            alert('Please enter a valid air travel distance in km.');
+        if (!airTravel.trim() || isNaN(parseFloat(airTravel)) || parseFloat(airTravel) <= 0) {
+            Alert.alert('Invalid Input', 'Please enter a valid air travel distance in km.');
             return;
         }
     
         // Save the air travel distance to the context
-        updateCarbonData('airTravel', parseFloat(AirTravel));
+        updateCarbonData('airTravel', parseFloat(airTravel));
     
         // Navigate to the next page
         router.push('/travel2');
@@ -56,8 +65,8 @@ const AirTravelScreen = () => {
                         placeholder="in kms"
                         placeholderTextColor="#999"
                         keyboardType="numeric"
-                        value={AirTravel}
-                        onChangeText={setAirTravel}
+                        value={airTravel}
+                        onChangeText={handleNumericInput}
                     />
 
                     <View style={styles.buttonContainer}>

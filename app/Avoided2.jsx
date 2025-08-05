@@ -37,15 +37,20 @@ const ElectricityConsumptionScreen = () => {
                 <StatusBar barStyle="dark-content" />
 
                 {/* Progress Bar */}
+                <View style={styles.progressWrapper}>
                 <View style={styles.progressBarContainer}>
-                    <Progress value={66} size="xs" style={styles.progressBar}>
+                    <Progress value={95} size="md" style={styles.progressBar}>
                         <ProgressFilledTrack className="bg-[#a4e22b]"/>
                     </Progress>
-                </View>
+                          </View>
+                    <View>
+                        <UiText style={styles.progressText}>17 of 18</UiText>
+                    </View>
+                    </View>
 
                 <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                    Does your business have recycling or reuse programs to cut emissions? (e.g., product take- back, refurbishment, or sustainability regulations)
+                    Do you implement any recycling or reuse programs in your business model that contribute to reducing emissions (e.g., product take-back or Extended Producer Responsibility regulations, refurbishment)?
                     </UiText>
 
                     <Textarea
@@ -102,10 +107,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'transparent',
     },
-    progressBarContainer: {
+     progressBarContainer: {
         width: '40%',
         paddingHorizontal: 20,
-        marginTop: 30,
         alignSelf: 'center',
     },
     progressBar:{
@@ -113,6 +117,19 @@ const styles = StyleSheet.create({
         height: 4,
         backgroundColor: '#e0e0e0', // Background color for the progress bar
         borderRadius: 2,
+    },
+    progressText: {
+        fontSize: 12,
+        color: '#000',
+        opacity: 0.5,
+    },
+    progressWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        paddingBottom: 24,
+        gap: 8,
     },
     textarea: {
         width: '190%', // Adjust the width to 90% of the container
@@ -131,7 +148,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     questionText: {
-        maxWidth: '40%',
+        maxWidth: '100%',
         fontWeight: 'bold',
         fontSize: 24,
         color: '#15181e',

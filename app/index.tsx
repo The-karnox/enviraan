@@ -29,7 +29,7 @@ const GradientBackground = () => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.webButton}
-                        onPress={() => (window.location.href = '/scope')}
+                        onPress={() => (window.location.href = '/name')}
                     >
                         <Text size="lg" style={styles.webButtonText}>
                             for Businesses
@@ -84,9 +84,11 @@ const GradientBackground = () => {
 // Wrap the GradientBackground component with the CarbonFootprintProvider
 const App = () => {
     return (
+        <View style={{ flex: 1, backgroundColor: '#f1ffdc' }}>
         <CarbonFootprintProvider>
             <GradientBackground />
         </CarbonFootprintProvider>
+        </View>
     );
 };
 

@@ -7,6 +7,7 @@ import {
     SafeAreaView,
     StatusBar,
     Dimensions,
+    Alert, // Import Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
@@ -19,11 +20,19 @@ const { width } = Dimensions.get('window');
 
 const CabTravelScreen = () => {
     const router = useRouter(); // Initialize the router
-    const [cabTravel , SetTaxiTravel] = useState('');
+    const [cabTravel, setCabTravel] = useState('');
     const { updateCarbonData } = useCarbonFootprint();
+
+    const handleNumericInput = (text: string) => {
+        // This regex allows numbers and at most one decimal point.
+        if (/^\d*\.?\d*$/.test(text)) {
+            setCabTravel(text);
+        }
+    };
+
     const handleContinue = () => {
-        if (!cabTravel || isNaN(parseFloat(cabTravel)) || parseFloat(cabTravel) <= 0) {
-            alert('Please enter a valid taxi travel distance in kms.');
+        if (!cabTravel.trim() || isNaN(parseFloat(cabTravel)) || parseFloat(cabTravel) <= 0) {
+            Alert.alert('Invalid Input', 'Please enter a valid taxi travel distance in kms.');
             return;
         }
 
@@ -32,7 +41,7 @@ const CabTravelScreen = () => {
 
         // Navigate to the next page
         router.push('/travel6');
-    }
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
@@ -57,7 +66,7 @@ const CabTravelScreen = () => {
                         placeholderTextColor="#999"
                         keyboardType="numeric"
                         value={cabTravel}
-                        onChangeText={SetTaxiTravel}
+                        onChangeText={handleNumericInput}
                     />
 
                     <View style={styles.buttonContainer}>
@@ -72,7 +81,7 @@ const CabTravelScreen = () => {
 
                         <TouchableOpacity
                             style={styles.continueButton}
-                            onPress={() => router.push({ pathname: '/travel6', params: {cabTravel} })} 
+                            onPress={handleContinue} 
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue

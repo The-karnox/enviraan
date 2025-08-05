@@ -7,6 +7,7 @@ import {
     SafeAreaView,
     StatusBar,
     Dimensions,
+    Alert, // Import Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
@@ -16,18 +17,26 @@ import { useRouter } from 'expo-router';import { useCarbonFootprint } from './Ca
 
 const { width } = Dimensions.get('window');
 
-const railTravelScreen = () => {
+const RailTravelScreen = () => {
     const router = useRouter(); // Initialize the router
-    const [RailTravel , SetRailTravel] = useState('');
+    const [railTravel, setRailTravel] = useState('');
     const { updateCarbonData } = useCarbonFootprint(); 
+
+    const handleNumericInput = (text: string) => {
+        // This regex allows numbers and at most one decimal point.
+        if (/^\d*\.?\d*$/.test(text)) {
+            setRailTravel(text);
+        }
+    };
+
     const handleContinue = () => {
-        if (!RailTravel || isNaN(parseFloat(RailTravel)) || parseFloat(RailTravel) <= 0) {
-            alert('Please enter a valid rail travel distance in kms.');
+        if (!railTravel.trim() || isNaN(parseFloat(railTravel)) || parseFloat(railTravel) <= 0) {
+            Alert.alert('Invalid Input', 'Please enter a valid rail travel distance in kms.');
             return;
         }
     
         // Save the rail travel distance to the context
-        updateCarbonData('railTravel', parseFloat(RailTravel));
+        updateCarbonData('railTravel', parseFloat(railTravel));
     
         // Navigate to the next page
         router.push('/travel3');
@@ -55,8 +64,8 @@ const railTravelScreen = () => {
                         placeholder="in kms"
                         placeholderTextColor="#999"
                         keyboardType="numeric"
-                        value={RailTravel}
-                        onChangeText={SetRailTravel}
+                        value={railTravel}
+                        onChangeText={handleNumericInput}
                     />
 
                     <View style={styles.buttonContainer}>
@@ -168,4 +177,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default railTravelScreen;
+export default RailTravelScreen;

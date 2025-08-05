@@ -21,6 +21,18 @@ const ElectricityConsumptionScreen2 = () => {
     const router = useRouter(); // Initialize the router
     const [renewablePercentage, setRenewablePercentage] = useState('');
     const { updateCarbonData } = useCarbonFootprint(); 
+
+    const handleNumericInput = (text: string) => {
+        // This regex allows numbers and at most one decimal point.
+        if (/^\d*\.?\d*$/.test(text)) {
+            const numericValue = parseFloat(text);
+            // Allow empty string for clearing, or numbers between 0 and 100
+            if (text === '' || (numericValue >= 0 && numericValue <= 100)) {
+                setRenewablePercentage(text);
+            }
+        }
+    };
+
     const handleContinue = () => {
         if (
             !renewablePercentage ||
@@ -62,7 +74,7 @@ const ElectricityConsumptionScreen2 = () => {
                         placeholderTextColor="#999"
                         keyboardType="numeric"
                         value={renewablePercentage}
-                        onChangeText={setRenewablePercentage}
+                        onChangeText={handleNumericInput}
                     />
 
                     <View style={styles.buttonContainer}>
@@ -123,7 +135,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     questionText: {
-        maxWidth: '40%',
+        maxWidth: '100%',
         fontWeight: 'bold',
         fontSize: 24,
         color: '#15181e',

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import LottieView from 'lottie-react-native';
+import WindyAnimation from '../assets/animations/Weather-windy.json';
 import {
     View,
     TextInput,
@@ -7,82 +9,80 @@ import {
     SafeAreaView,
     StatusBar,
     Dimensions,
-    Alert, // Import Alert
+    Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
-import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
 import { useCarbonFootprint } from './CarbonFootprintContext';
 
-
 const { width } = Dimensions.get('window');
 
-const ElectricBus = () => {
-    const router = useRouter(); // Initialize the router
-    const [eBusTravel, setEBusTravel] = useState('');
+const reportingPeriod = () => {
+    const router = useRouter();
+    const [reportingPrd, setReportingPrd] = useState(''); // State for organization name
     const { updateCarbonData } = useCarbonFootprint();
 
-    const handleNumericInput = (text: string) => {
-        // This regex allows numbers and at most one decimal point.
-        if (/^\d*\.?\d*$/.test(text)) {
-            setEBusTravel(text);
-        }
-    };
-
     const handleContinue = () => {
-        if (!eBusTravel.trim() || isNaN(parseFloat(eBusTravel)) || parseFloat(eBusTravel) <= 0) {
-            Alert.alert('Invalid Input', 'Please enter a valid electric bus travel distance in kms.');
+        if (!reportingPrd.trim()) {
+            Alert.alert('Input Required', 'Please enter the organizational annual reporting period before continuing.');
             return;
         }
-            
-        // Save the electric bus travel distance to the context
-        updateCarbonData('electricBusTravel', parseFloat(eBusTravel));
-
-        // Navigate to the next page
-        router.push('/travel7');
-    }
-
+        // Save the organization name to the context
+        updateCarbonData('reportingPeriod', reportingPrd);
+        // Navigate to the next screen
+        router.push('/eligibility');
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
-
-                {/* Progress Bar */}
-                <View style={styles.progressBarContainer}>
-                    <Progress value={66.66} size="xs"    style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
-                    </Progress>
+                {/* Background Lottie Animation */}
+                <View
+                    style={[
+                        StyleSheet.absoluteFill,
+                        { justifyContent: 'center', alignItems: 'center' }
+                    ]}
+                    pointerEvents="none"
+                >
+                    <LottieView
+                        source={WindyAnimation}
+                        autoPlay
+                        loop
+                        style={{
+                            width: 400,
+                            height: 200,
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                            opacity: 0.2
+                        }}
+                        resizeMode="contain"
+                    />
                 </View>
-
                 <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                    Approximate distance traveled via electric bus in a year?
+                       Please enter the organizational annual reporting period?
                     </UiText>
-
                     <TextInput
                         style={styles.input}
-                        placeholder="in kms"
-                        placeholderTextColor="#999"
-                        keyboardType="numeric"
-                        value={eBusTravel}
-                        onChangeText={handleNumericInput}
+                         placeholder="Number"
+                         placeholderTextColor="#999"
+                          value={reportingPrd}
+                           keyboardType="numeric"
+                         maxLength={4}
+                               onChangeText={text => {
+        // Only allow up to 4 digits
+                               const numeric = text.replace(/[^0-9]/g, '').slice(0, 4);
+                                    setReportingPrd(numeric);
+                                  }}
+                                  onSubmitEditing={handleContinue}
                     />
-
                     <View style={styles.buttonContainer}>
+                        {/* Removed Skip button */}
                         <TouchableOpacity
-                            style={styles.skipButton}
-                            onPress={() => router.push('/travel7')}
-                        >
-                            <UiText size="lg" style={styles.skipButtonText}>
-                                Skip
-                            </UiText>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.continueButton}
-                            onPress={handleContinue} 
+                            style={[styles.continueButton, { width: 250 }]}
+                            onPress={handleContinue}
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
@@ -104,12 +104,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     progressBarContainer: {
-        width: '40%',
-        height: 4,
+        width: '10%',
+        height: 1,
         backgroundColor: 'transparent',
-        marginTop: 20,
+        marginTop: 40,
         alignSelf: 'center',
-        paddingBottom: 24,
+        paddingBottom: 4,
     },
     progressBar: {
         width: '40%', // Retain the same size as the original progress bar
@@ -134,6 +134,15 @@ const styles = StyleSheet.create({
         color: '#15181e',
         textAlign: 'center',
         marginBottom: 20,
+    },
+     cloudContainer: {
+        height: 300,
+        position: 'absolute',
+        bottom: 10, // Adjust as needed
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: -1,
     },
     input: {
         width: '40%',
@@ -179,4 +188,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ElectricBus;
+export default reportingPeriod;

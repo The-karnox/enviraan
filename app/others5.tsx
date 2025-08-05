@@ -1,58 +1,176 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
-    TextInput,
     TouchableOpacity,
     StyleSheet,
     SafeAreaView,
     StatusBar,
-    Dimensions,
+    ScrollView,
+    Alert,
+    TextInput,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
+import { Checkbox, CheckboxIndicator } from '@/components/ui/checkbox';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { useRouter } from 'expo-router';
-import { useCarbonFootprint } from './CarbonFootprintContext'; 
+import { useCarbonFootprint } from './CarbonFootprintContext';
 
-const { width } = Dimensions.get('window');
+const empTransport = () => {
+    const router = useRouter();
+    const { carbonData, updateCarbonData } = useCarbonFootprint();
+    const [selectedOptions, setSelectedOptions] = useState<string[]>(carbonData.primaryComumute || []);
+    
+    // State to hold details for each selected commute type
+    const [commuteDetails, setCommuteDetails] = useState<{ [key: string]: { employees: string; distance: string } }>(
+        carbonData.commuteDetails || {}
+    );
 
-const ElectricityConsumptionScreen = () => {
-    const router = useRouter(); // Initialize the router
-    const { updateCarbonData } = useCarbonFootprint(); 
-    const [distance, setDist] = useState('');
+    // Keep commuteDetails in sync with selectedOptions
+    useEffect(() => {
+        const newDetails = { ...commuteDetails };
+        selectedOptions.forEach(option => {
+            if (!newDetails[option]) {
+                newDetails[option] = { employees: '', distance: '' };
+            }
+        });
+        // Optional: remove details for unselected options
+        Object.keys(newDetails).forEach(option => {
+            if (!selectedOptions.includes(option)) {
+                delete newDetails[option];
+            }
+        });
+        setCommuteDetails(newDetails);
+    }, [selectedOptions]);
+
+    const options = [
+        { label: 'Personal Car', value: 'Car' },
+        { label: 'Carpooling', value: 'Carpooling' },
+        { label: 'Public Transport', value: 'Public Transport' },
+        { label: 'Cycling', value: 'Cycling' },
+        { label: 'Walking', value: 'Walking' },
+        { label: 'Electric Vehicles', value: 'Electric Vehicles' },
+    ];
+
+    const handleToggleOption = (value: string) => {
+        setSelectedOptions(prev =>
+            prev.includes(value)
+                ? prev.filter(v => v !== value)
+                : [...prev, value]
+        );
+    };
+
+    const handleDetailChange = (option: string, field: 'employees' | 'distance', value: string) => {
+        // Allow only numeric input
+        const numericValue = value.replace(/[^0-9]/g, '');
+        setCommuteDetails(prev => ({
+            ...prev,
+            [option]: { ...prev[option], [field]: numericValue }
+        }));
+    };
+
     const handleContinue = () => {
-        updateCarbonData('distanceTravelledByEmployees', parseFloat(distance) || 0);
-
-        // Navigate to the next screen
+        if (selectedOptions.length === 0) {
+            alert('Please select at least one commute option.');
+            return;
+        }
+        // Validate that all fields for selected options are filled
+        for (const option of selectedOptions) {
+            const details = commuteDetails[option];
+            if (!details || !details.employees) {
+                alert( `Please enter the number of employees for "${option}".`);
+                return;
+            }
+            if (!details.distance) {
+              alert( `Please enter the average distance for "${option}".`);
+                return;
+            }
+        }
+        updateCarbonData('primaryComumute', selectedOptions);
+        updateCarbonData('commuteDetails', commuteDetails);
         router.push('/others6');
-    }
-
+    };
 
     return (
         <LinearGradient colors={['#ffffff', '#f1ffdc']} style={styles.background}>
             <SafeAreaView style={styles.container}>
                 <StatusBar barStyle="dark-content" />
+                 <View style={styles.progressWrapper}>
+                                <View style={styles.progressBarContainer}>
+                                    <Progress value={65} size="md" style={styles.progressBar}>
+                                        <ProgressFilledTrack className="bg-[#a4e22b]" />
+                                    </Progress>
+                                </View>
+                                 <UiText style={styles.progressText}>12 of 18</UiText>
+                                </View>
+                <ScrollView contentContainerStyle={styles.scrollContent}>
+                     
 
-                {/* Progress Bar */}
-                <View style={styles.progressBarContainer}>
-                    <Progress value={40} size="xs"    style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
-                    </Progress>
-                </View>
-
-                <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                        What is the total distance travelled by employees for business trips?
+                        How do employees primarily commute to work?
                     </UiText>
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="in kms"
-                        placeholderTextColor="#999"
-                        keyboardType="numeric"
-                        value={distance}
-                        onChangeText={setDist}
-                    />
+                    <View style={styles.checkboxContainer}>
+                        {options.map((option) => (
+                            <TouchableOpacity
+                                key={option.value}
+                                style={[
+                                    styles.checkboxWrapper,
+                                    selectedOptions.includes(option.value) && styles.checkboxWrapperSelected,
+                                ]}
+                                onPress={() => handleToggleOption(option.value)}
+                            >
+                                <Checkbox
+                                    value={option.value}
+                                    isChecked={selectedOptions.includes(option.value)}
+                                    aria-label={option.label}
+                                >
+                                    <CheckboxIndicator
+                                        style={{
+                                            width: 22,
+                                            height: 22,
+                                            borderRadius: 4,
+                                            borderWidth: 2,
+                                            borderColor: '#86B049',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            backgroundColor: selectedOptions.includes(option.value) ? '#a4e22b' : '#fff',
+                                        }}
+                                    >
+                                        {selectedOptions.includes(option.value) && (
+                                            <UiText style={{ color: '#4CAF50', fontSize: 16, fontWeight: 'bold' }}>✓</UiText>
+                                        )}
+                                    </CheckboxIndicator>
+                                </Checkbox>
+                                <UiText size="md" style={styles.checkboxLabel}>
+                                    {option.label}
+                                </UiText>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+
+                    {/* Dynamically render input fields for selected options */}
+                    {selectedOptions.map(option => (
+                        <View key={option} style={styles.detailsContainer}>
+                            <UiText size="lg" bold style={styles.detailsHeader}>{option}</UiText>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="No. of employees"
+                                placeholderTextColor="#999"
+                                keyboardType="numeric"
+                                value={commuteDetails[option]?.employees || ''}
+                                onChangeText={(value) => handleDetailChange(option, 'employees', value)}
+                            />
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Average distance travelled (km)"
+                                placeholderTextColor="#999"
+                                keyboardType="numeric"
+                                value={commuteDetails[option]?.distance || ''}
+                                onChangeText={(value) => handleDetailChange(option, 'distance', value)}
+                            />
+                        </View>
+                    ))}
 
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
@@ -65,102 +183,126 @@ const ElectricityConsumptionScreen = () => {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={styles.continueButton}
-                            onPress={handleContinue} 
+                            style={[
+                                styles.continueButton,
+                                selectedOptions.length === 0 && { backgroundColor: '#d3e9a7', opacity: 0.6 }
+                            ]}
+                            onPress={handleContinue}
+                            disabled={selectedOptions.length === 0}
                         >
                             <UiText size="lg" bold style={styles.continueButtonText}>
                                 Continue
                             </UiText>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </ScrollView>
             </SafeAreaView>
         </LinearGradient>
     );
 };
 
 const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-    },
-    container: {
-        flex: 1,
-        backgroundColor: 'transparent',
+    background: { flex: 1 },
+    container: { flex: 1 },
+    scrollContent: {
+        flexGrow: 1,
+        paddingHorizontal: 20,
+        paddingBottom: 20,
+        alignItems: 'center',
     },
     progressBarContainer: {
         width: '40%',
-        height: 4,
-        backgroundColor: 'transparent',
-        marginTop: 20,
-        alignSelf: 'center',
-        paddingBottom: 24,
+        // Removed marginBottom to allow proper vertical alignment
     },
-    progressBar: {
-        width: '40%', // Retain the same size as the original progress bar
-        height: 4,
-        backgroundColor: '#e0e0e0', // Background color for the progress bar
-        borderRadius: 2,
-    },
-    progressFilledTrack: {
-        backgroundColor: '#a4e22b', // Green color for the filled track
-        height: '100%',
-        borderRadius: 2,
-    },
-    contentContainer: {
-        paddingHorizontal: 20,
-        marginTop: 30,
+    progressBar: { width: '100%', height: 4, backgroundColor: '#e0e0e0', borderRadius: 2 },
+       progressWrapper: {
+        flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        paddingBottom: 24,
+        gap: 8,
     },
-    questionText: {
-        maxWidth: '40%',
-        fontWeight: 'bold',
-        fontSize: 24,
-        color: '#15181e',
-        textAlign: 'center',
-        marginBottom: 20,
+    progressText: { fontSize: 12, color: '#000', opacity: 0.5 },
+    questionText: { color: '#15181e', textAlign: 'center', fontWeight: 'bold', marginBottom: 20 },
+    checkboxContainer: { width: '90%', maxWidth: 500 },
+    checkboxWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f6ffec',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#d4e8c2',
+        paddingHorizontal: 15,
+        paddingVertical: 15,
+        marginBottom: 10,
+        width: '100%',
+    },
+    checkboxWrapperSelected: { borderColor: '#86B049', backgroundColor: '#eff8e7' },
+    checkboxIndicator: {
+        width: 22,
+        height: 22,
+        borderRadius: 4,
+        borderWidth: 2,
+        borderColor: '#86B049',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    checkboxCheckmark: { color: '#86B049', fontSize: 16, fontWeight: 'bold' },
+    checkboxLabel: { marginLeft: 12, color: '#15181e' },
+    detailsContainer: {
+        width: '90%',
+        maxWidth: 500,
+        marginTop: 20,
+        padding: 15,
+        borderRadius: 10,
+        backgroundColor: '#transparent',
+        borderWidth: 1,
+        borderColor: '#d4e8c2',
+    },
+    detailsHeader: {
+        marginBottom: 10,
+        color: '#333',
     },
     input: {
-        width: '40%',
+        width: '100%',
         height: 50,
-        borderRadius: 25,
+        borderRadius: 10,
         borderWidth: 1,
         borderColor: '#ddd',
         paddingHorizontal: 16,
         fontSize: 16,
         backgroundColor: 'white',
-        marginVertical: 20,
+        marginBottom: 10,
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        width: '40%',
-        marginTop: 10,
+        width: '90%',
+        maxWidth: 450,
+        marginTop: 20,
         gap: 24,
     },
     skipButton: {
-        width: 200,
+        flex: 1,
         height: 50,
         borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
         borderColor: '#86B049',
-        backgroundColor: 'transparent',
     },
-    skipButtonText: {
-        color: '#86B049',
-    },
+    skipButtonText: { color: '#86B049' },
     continueButton: {
-        width: 200,
+        flex: 1,
         height: 50,
         borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#a4e22b',
     },
-    continueButtonText: {
-        color: '#000',
-    },
+    continueButtonText: { color: '#000' },
 });
 
-export default ElectricityConsumptionScreen;
+export default empTransport;

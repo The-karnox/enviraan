@@ -7,6 +7,7 @@ import {
     SafeAreaView,
     StatusBar,
     Dimensions,
+    Alert, // Import Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
@@ -19,11 +20,19 @@ const { width } = Dimensions.get('window');
 
 const EvCab = () => {
     const router = useRouter(); // Initialize the router
-    const [eCabTravel , setEtaxiTravel] = useState('');
+    const [eCabTravel, setECabTravel] = useState('');
     const { updateCarbonData } = useCarbonFootprint();
+
+    const handleNumericInput = (text: string) => {
+        // This regex allows numbers and at most one decimal point.
+        if (/^\d*\.?\d*$/.test(text)) {
+            setECabTravel(text);
+        }
+    };
+
     const handleContinue = () => {
-        if (!eCabTravel || isNaN(parseFloat(eCabTravel)) || parseFloat(eCabTravel) <= 0) {
-            alert('Please enter a valid electric taxi travel distance in kms.');
+        if (!eCabTravel.trim() || isNaN(parseFloat(eCabTravel)) || parseFloat(eCabTravel) <= 0) {
+            Alert.alert('Invalid Input', 'Please enter a valid electric taxi travel distance in kms.');
             return;
         }
     
@@ -57,7 +66,7 @@ const EvCab = () => {
                         placeholderTextColor="#999"
                         keyboardType="numeric"
                         value={eCabTravel}
-                        onChangeText={setEtaxiTravel}
+                        onChangeText={handleNumericInput}
                     />
 
                     <View style={styles.buttonContainer}>

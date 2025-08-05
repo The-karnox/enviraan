@@ -37,15 +37,20 @@ const ElectricityConsumptionScreen = () => {
                 <StatusBar barStyle="dark-content" />
 
                 {/* Progress Bar */}
-                <View style={styles.progressBarContainer}>
-                    <Progress value={33} size="xs" style={styles.progressBar}>
-                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
-                    </Progress>
-                </View>
+                <View style={styles.progressWrapper}>
+                                <View style={styles.progressBarContainer}>
+                                    <Progress value={90} size="md" style={styles.progressBar}>
+                                        <ProgressFilledTrack className="bg-[#a4e22b]"/>
+                                    </Progress>
+                                          </View>
+                                    <View>
+                                        <UiText style={styles.progressText}>16 of 18</UiText>
+                                    </View>
+                                    </View>
 
                 <View style={styles.contentContainer}>
                     <UiText size="xl" bold style={styles.questionText}>
-                    Do your products or services help customers reduce emissions? If yes, can you estimate the avoided emissions?
+                   Does your company produce any products or services that help reduce emissions for your customers? Can you estimate the emissions avoided by using your product?
                     </UiText>
 
                     <Textarea
@@ -102,10 +107,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'transparent',
     },
-    progressBarContainer: {
+      progressBarContainer: {
         width: '40%',
         paddingHorizontal: 20,
-        marginTop: 30,
         alignSelf: 'center',
     },
     progressBar:{
@@ -113,6 +117,19 @@ const styles = StyleSheet.create({
         height: 4,
         backgroundColor: '#e0e0e0', // Background color for the progress bar
         borderRadius: 2,
+    },
+    progressText: {
+        fontSize: 12,
+        color: '#000',
+        opacity: 0.5,
+    },
+    progressWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        paddingBottom: 24,
+        gap: 8,
     },
     textarea: {
         width: '90%', // Adjust the width to 90% of the container
@@ -131,7 +148,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     questionText: {
-        maxWidth: '40%',
+        maxWidth: '100%',
         fontWeight: 'bold',
         fontSize: 24,
         color: '#15181e',

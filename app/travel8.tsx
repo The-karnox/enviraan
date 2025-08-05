@@ -7,6 +7,7 @@ import {
     SafeAreaView,
     StatusBar,
     Dimensions,
+    Alert, // Import Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text as UiText } from '@/components/ui/text';
@@ -21,9 +22,17 @@ const PetrolConsumption = () => {
     const router = useRouter(); // Initialize the router
     const [petrol , setPetrol] = useState('');
     const { updateCarbonData } = useCarbonFootprint();
+
+    const handleNumericInput = (text: string) => {
+        // This regex allows numbers and at most one decimal point.
+        if (/^\d*\.?\d*$/.test(text)) {
+            setPetrol(text);
+        }
+    };
+
     const handleContinue = () => {
-        if (!petrol || isNaN(parseFloat(petrol)) || parseFloat(petrol) <= 0) {
-            alert('Please enter a valid petrol consumption in liters.');
+        if (!petrol.trim() || isNaN(parseFloat(petrol)) || parseFloat(petrol) <= 0) {
+            Alert.alert('Invalid Input', 'Please enter a valid petrol consumption in liters.');
             return;
         }
     
@@ -57,7 +66,7 @@ const PetrolConsumption = () => {
                         placeholderTextColor="#999"
                         keyboardType="numeric"
                         value={petrol}
-                        onChangeText={setPetrol}
+                        onChangeText={handleNumericInput}
                     />
 
                     <View style={styles.buttonContainer}>
