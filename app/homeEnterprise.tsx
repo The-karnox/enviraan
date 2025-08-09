@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useCarbonFootprint } from './CarbonFootprintContext';
@@ -11,8 +11,45 @@ const HomeEnterprise = () => {
   const router = useRouter();
   const { carbonData, resetCarbonData } = useCarbonFootprint();
 
-  // Get the calculated scopes
   const { scope1, scope2, scope3, total } = calculateCorporateCarbonFootprint(carbonData);
+
+  // This effect runs when the component mounts, sending data to the backend
+  useEffect(() => {
+    const saveFootprintData = async () => {
+      const payload = {
+        calculatedOn: new Date().toISOString(),
+        scope1,
+        scope2,
+        scope3,
+        total,
+        fullData: carbonData, // Send the complete raw data as well
+      };
+
+      try {
+        // IMPORTANT: Replace <YOUR_LOCAL_IP> with your computer's actual IP address
+        const response = await fetch('http://<YOUR_LOCAL_IP>:3001/api/footprint', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        console.log('Backend response:', result.message);
+
+      } catch (error) {
+        console.error('Failed to send data to server:', error);
+        Alert.alert('Save Error', 'Could not save footprint data to the server.');
+      }
+    };
+
+    saveFootprintData();
+  }, []); // The empty array ensures this runs only once
 
   const handleContinue = () => {
     resetCarbonData?.();
@@ -52,7 +89,7 @@ const HomeEnterprise = () => {
           <Heading style={styles.totalValue}>{total.toFixed(2)}</Heading>
           <Text style={styles.totalUnit}>tonnes CO₂e</Text>
           <Text style={styles.dateText}>
-            Last Calculated On:  {new Date().toLocaleDateString()}
+            Last Calculated On: {new Date().toLocaleDateString()}
           </Text>
         </View>
 
